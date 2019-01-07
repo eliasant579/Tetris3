@@ -15,7 +15,10 @@ namespace Tetris3
         Graphics grid;
         Pen gridPen = new Pen(Color.Black);
         SolidBrush drawBrush = new SolidBrush(Color.Red);
-        Point startPoint = new Point(5, 1);
+        Point startLocation = new Point(5, 1);
+        int startPos = 0;
+        int fallCounter;
+        int levelFallFreq = 10;
         
         //this booleans make the program run better, I get it :)
         Boolean leftArrowDown, downArrowDown, rightArrowDown, upArrowDown; //whats the difference with bool ?
@@ -28,17 +31,20 @@ namespace Tetris3
         bool[,] squareEmpty = new bool[12, 20];
 
         //I'm implementing the colors last, I don't really care right now
+        //Actually I'm going to do it now because I'm changing the bool matrix to string and using a switch case + defeult
+        //I will work on collisions using colors
 
 
-            /// <summary>
-            /// Draws the given tetragram according to its location and position
-            /// </summary>
-            /// <param name="origin"></param>
-            /// <param name="shape"></param>
-            /// <param name="position"></param>
-        public void ShapeDraw(Point origin, char shape, int position)
+        /// <summary>
+        /// Draws the given tetragram according to its location and position
+        /// </summary>
+        /// <param name="origin">Coordinates of the square on the grid</param>
+        /// <param name="shape">Shape of the tetragram</param>
+        /// <param name="position">Orientation of the tetragram 0-3</param>
+        /// <param name="color">Color of the square</param>
+        public void ShapeDraw(Point origin, char shape, int position, string color)
         {
-            grid.FillRectangle(drawBrush, squareOrigin[origin.X, origin.Y].X, squareOrigin[origin.X, origin.Y].Y, 21, 21);
+            grid.FillRectangle(drawBrush, origin.X, origin.Y, 21, 21);
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
@@ -62,14 +68,49 @@ namespace Tetris3
             {
                 for (int j = 0; j < 20; j++)
                 {
-                    if (i != 0 || i != 11 || j != 0 || j != 19)
+                    if (i == 0 || i == 11 || j == 0 || j == 19)
+                    {
+                        squareEmpty[i, j] = false;
+                    }
+                    else
                     {
                         squareOrigin[i, j] = new Point(30 + i * 21, 30 + j * 21);
                         squareEmpty[i, j] = true;
                     }
                 }
             }
-            ShapeDraw(startPoint, 't', 0);
+            movesTimer.Enabled = true;
+            ShapeDraw(squareOrigin[startLocation.X, startLocation.Y], 't', 0, "red");
+        }
+
+        private void movesTimer_Tick(object sender, EventArgs e)
+        {
+            if (upArrowDown == true)
+            {
+                 startPos = ( startPos + 1) % 4;
+            }
+            else if (leftArrowDown == true)
+            {
+                startLocation.X--;
+            }
+            else if (rightArrowDown == true)
+            {
+                startLocation.X++;
+            }
+            else if (downArrowDown == true)
+            {
+                startLocation.Y++;
+            }
+
+            fallCounter++;
+
+            if (fallCounter == levelFallFreq)
+            {
+                startLocation.Y++;
+                fallCounter = 0;
+            }
+            Refresh();
+            ShapeDraw(squareOrigin[startLocation.X, startLocation.Y], 'T', startPos, "");
         }
 
         public Form1()
