@@ -27,13 +27,8 @@ namespace Tetris3
         //there are extra rows an columns in order to deal with both te arrays at the same time
         Point[,] squareOrigin = new Point[12, 20];
 
-        //Are the squares empty? There are two extra rows and columns
-        bool[,] squareEmpty = new bool[12, 20];
-
-        //I'm implementing the colors last, I don't really care right now
-        //Actually I'm going to do it now because I'm changing the bool matrix to string and using a switch case + defeult
-        //I will work on collisions using colors
-
+        //Colors array. White is empty, black is outside border
+        Color[,] squareColor = new Color[12, 20];
 
         /// <summary>
         /// Draws the given tetragram according to its location and position
@@ -44,6 +39,7 @@ namespace Tetris3
         /// <param name="color">Color of the square</param>
         public void ShapeDraw(Point origin, char shape, int position, string color)
         {
+            squareColor[origin.X, origin.Y] = Color.Red;
             grid.FillRectangle(drawBrush, origin.X, origin.Y, 21, 21);
         }
 
@@ -60,6 +56,22 @@ namespace Tetris3
                 e.Graphics.DrawLine(gridPen, 50, i, 260, i);
             }
             //*/
+
+            for (int i = 0; i < 12; i++)
+            {
+                for (int j = 0; j < 20; j++)
+                {
+                    if (i == 0 || i == 11 || j == 0 || j == 19)
+                    {
+                        drawBrush.Color = squareColor[i, j];
+                    }
+                    else
+                    {
+                        squareOrigin[i, j] = new Point(30 + i * 21, 30 + j * 21);
+                        drawBrush.Color = squareColor[i, j];
+                    }
+                }
+            }
         }
 
         private void Form1_Shown(object sender, EventArgs e)
@@ -70,12 +82,12 @@ namespace Tetris3
                 {
                     if (i == 0 || i == 11 || j == 0 || j == 19)
                     {
-                        squareEmpty[i, j] = false;
+                        squareColor[i, j] = Color.Black;
                     }
                     else
                     {
                         squareOrigin[i, j] = new Point(30 + i * 21, 30 + j * 21);
-                        squareEmpty[i, j] = true;
+                        squareColor[i, j] = Color.White;
                     }
                 }
             }
