@@ -15,10 +15,11 @@ namespace Tetris3
         Graphics grid;
         Pen gridPen = new Pen(Color.Black);
         SolidBrush drawBrush = new SolidBrush(Color.Red);
-        Point startLocation = new Point(5, 1);
         int startPos = 0;
-        int fallCounter;
+        int fallCounter = 0;
         int levelFallFreq = 10;
+        
+        //I want to prove that I can include the little bump at the biginning! I'll fit the first counterClick block in the key down method, and I'll refresh
         
         //this booleans make the program run better, I get it :)
         Boolean leftArrowDown, downArrowDown, rightArrowDown, upArrowDown; //whats the difference with bool ?
@@ -30,6 +31,15 @@ namespace Tetris3
         //Colors array. White is empty, black is outside border
         Color[,] squareColor = new Color[12, 20];
 
+        //Shape array, contains for cells and is used to check collisions and move the current shape around. Defines tetragram's squares' coordinates
+        Point[] shapeCoord = new Point[4];
+        Point[] nextCoord = new Point[4];
+
+
+        //create a shape rotation method, working with the shape array
+
+
+        /*
         /// <summary>
         /// Draws the given tetragram according to its location and position
         /// </summary>
@@ -37,15 +47,16 @@ namespace Tetris3
         /// <param name="shape">Shape of the tetragram</param>
         /// <param name="position">Orientation of the tetragram 0-3</param>
         /// <param name="color">Color of the square</param>
-        public void ShapeDraw(Point origin, char shape, int position, string color)
+        public void ShapeDraw(Point origin, char shape, int position)
         {
-            squareColor[origin.X, origin.Y] = Color.Red;
-            grid.FillRectangle(drawBrush, origin.X, origin.Y, 21, 21);
+            //problems
+            grid.FillRectangle(drawBrush, origin.X, origin.Y, 20, 20);
         }
+        */
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            //*/
+            /*/
             for (int i = 50; i <= 260; i += 21)
             {
                 e.Graphics.DrawLine(gridPen, i, 50, i, 428);
@@ -61,21 +72,112 @@ namespace Tetris3
             {
                 for (int j = 0; j < 20; j++)
                 {
-                    if (i == 0 || i == 11 || j == 0 || j == 19)
+                    Point tempCoord = new Point(i, j);
+
+                    drawBrush.Color = squareColor[i, j];
+
+                    if (i == 0 || j == 0 || i == 11 || j == 19)
                     {
-                        drawBrush.Color = squareColor[i, j];
+                        squareColor[i, j] = Color.Black;
+                    }
+                    else if (nextCoord.Contains(tempCoord) == true)
+                    {
+                        squareColor[i, j] = Color.Red;
                     }
                     else
                     {
-                        squareOrigin[i, j] = new Point(30 + i * 21, 30 + j * 21);
+                        squareColor[i, j] = Color.White;
                         drawBrush.Color = squareColor[i, j];
+                        e.Graphics.FillRectangle(drawBrush, squareOrigin[i, j].X, squareOrigin[i, j].Y, 20, 20);
+                    }
+
+
+                    if (i == 11 && j == 19)
+                    {
+                        drawBrush.Color = squareColor[i, j];
+                        e.Graphics.FillRectangle(drawBrush, squareOrigin[0, 0].X, squareOrigin[0, 0].Y, 20, 419);
+                        e.Graphics.FillRectangle(drawBrush, squareOrigin[0, 0].X, squareOrigin[0, 0].Y, 251, 20);
+                        e.Graphics.FillRectangle(drawBrush, squareOrigin[11, 0].X, squareOrigin[11, 0].Y, 20, 419);
+                        e.Graphics.FillRectangle(drawBrush, squareOrigin[0, 19].X, squareOrigin[0, 19].Y, 251, 20);
                     }
                 }
             }
+
+            for (int i = 0; i<4; i++)
+            {
+                drawBrush.Color = squareColor[nextCoord[i].X, nextCoord[i].Y];
+                e.Graphics.FillRectangle(drawBrush, squareOrigin[nextCoord[i].X, nextCoord[i].X].X, squareOrigin[nextCoord[i].X, nextCoord[i].X].Y, 20, 20);
+            }
+
+            /*
+            if (nextCoord.Contains(tempCoord) == true && squareColor[nextCoord[squaresCounter].X, nextCoord[squaresCounter].Y] != Color.Black) //if that square is inside the shapeCoord array change color
+            {
+                //squareColor[shapeCoord[squaresCounter].X, shapeCoord[squaresCounter].Y] = Color.White;
+                //shapeCoord[squaresCounter] = nextCoord[squaresCounter];
+                squareColor[i, j] = Color.Red;
+                //squaresCounter++;
+            }
+            squaresCounter = 0;
+            */
         }
 
-        private void Form1_Shown(object sender, EventArgs e)
+        //I will have to work on the temporary variables here
+        private void movesTimer_Tick(object sender, EventArgs e)
         {
+            if (upArrowDown == true)
+            {
+                startPos = (startPos + 1) % 4;
+            }
+            else
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    nextCoord[i].X = shapeCoord[i].X;
+                    nextCoord[i].Y = shapeCoord[i].Y;
+
+                    if (leftArrowDown == true)
+                    {
+                        nextCoord[i].X = shapeCoord[i].X - 1;
+                    }
+                    else if (rightArrowDown == true)
+                    {
+                        nextCoord[i].X = shapeCoord[i].X + 1;
+                    }
+                    else if (downArrowDown == true)
+                    {
+                        nextCoord[i].Y = shapeCoord[i].Y + 1;
+                    }
+                }
+            }
+
+            fallCounter++;
+
+            if (fallCounter == levelFallFreq)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    nextCoord[i].X = shapeCoord[i].X;
+                    nextCoord[i].Y = shapeCoord[i].Y + 1;
+                }
+                fallCounter = 0;
+            }
+            Refresh();
+        }
+
+        public Form1()
+        {
+            InitializeComponent();
+
+            grid = this.CreateGraphics();
+
+            //*temporary solution until I implement the chooseShape and rotate method
+            shapeCoord[0] = new Point(5, 1);
+            shapeCoord[1] = new Point(6, 1);
+            shapeCoord[2] = new Point(5, 2);
+            shapeCoord[3] = new Point(4, 2);
+
+            //*/
+
             for (int i = 0; i < 12; i++)
             {
                 for (int j = 0; j < 20; j++)
@@ -86,50 +188,12 @@ namespace Tetris3
                     }
                     else
                     {
-                        squareOrigin[i, j] = new Point(30 + i * 21, 30 + j * 21);
                         squareColor[i, j] = Color.White;
                     }
+                    squareOrigin[i, j] = new Point(30 + i * 21, 30 + j * 21);
                 }
             }
             movesTimer.Enabled = true;
-            ShapeDraw(squareOrigin[startLocation.X, startLocation.Y], 't', 0, "red");
-        }
-
-        private void movesTimer_Tick(object sender, EventArgs e)
-        {
-            if (upArrowDown == true)
-            {
-                 startPos = ( startPos + 1) % 4;
-            }
-            else if (leftArrowDown == true)
-            {
-                startLocation.X--;
-            }
-            else if (rightArrowDown == true)
-            {
-                startLocation.X++;
-            }
-            else if (downArrowDown == true)
-            {
-                startLocation.Y++;
-            }
-
-            fallCounter++;
-
-            if (fallCounter == levelFallFreq)
-            {
-                startLocation.Y++;
-                fallCounter = 0;
-            }
-            Refresh();
-            ShapeDraw(squareOrigin[startLocation.X, startLocation.Y], 'T', startPos, "");
-        }
-
-        public Form1()
-        {
-            InitializeComponent();
-
-            grid = this.CreateGraphics();
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -150,6 +214,8 @@ namespace Tetris3
             {
                 upArrowDown = true;
             }
+
+            //Refresh();    //works!
         }
 
         private void Form1_KeyUp(object sender, KeyEventArgs e)
