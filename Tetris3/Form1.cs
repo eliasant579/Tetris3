@@ -72,10 +72,10 @@ namespace Tetris3
             {
                 for (int j = 0; j < 20; j++)
                 {
-                    Point tempCoord = new Point(i, j);
+                    //Point tempCoord = new Point(i, j);
 
                     drawBrush.Color = squareColor[i, j];
-
+                    /*
                     if (i == 0 || j == 0 || i == 11 || j == 19)
                     {
                         squareColor[i, j] = Color.Black;
@@ -85,11 +85,11 @@ namespace Tetris3
                         squareColor[i, j] = Color.Red;
                     }
                     else
-                    {
-                        squareColor[i, j] = Color.White;
+                    {*/
+                        //squareColor[i, j] = Color.White;
                         drawBrush.Color = squareColor[i, j];
                         e.Graphics.FillRectangle(drawBrush, squareOrigin[i, j].X, squareOrigin[i, j].Y, 20, 20);
-                    }
+                    //}
 
 
                     if (i == 11 && j == 19)
@@ -103,10 +103,31 @@ namespace Tetris3
                 }
             }
 
+            bool collisionCheck = false;
+
             for (int i = 0; i<4; i++)
             {
-                drawBrush.Color = squareColor[nextCoord[i].X, nextCoord[i].Y];
-                e.Graphics.FillRectangle(drawBrush, squareOrigin[nextCoord[i].X, nextCoord[i].X].X, squareOrigin[nextCoord[i].X, nextCoord[i].X].Y, 20, 20);
+                Point tempCoord = new Point (nextCoord[i].X, nextCoord[i].Y);
+                if (squareColor[nextCoord[i].X, nextCoord[i].Y] != Color.White && shapeCoord.Contains(tempCoord) == false) { collisionCheck = true; }
+
+                if (i == 3 && collisionCheck == false)
+                {
+                    drawBrush.Color = Color.Red;
+                    for (int j = 0; i < 4; i++)
+                    {
+                        shapeCoord[j] = nextCoord[j];
+                        e.Graphics.FillRectangle(drawBrush, squareOrigin[shapeCoord[j].X, shapeCoord[j].Y].X, squareOrigin[shapeCoord[j].X, shapeCoord[j].Y].Y, 20, 20);
+                    }                   
+                }
+                else if (i == 3 && collisionCheck == true)
+                {
+                    collisionCheck = false;
+                    for (int j = 0; i < 4; i++)
+                    {
+                        nextCoord[j] = shapeCoord[i];
+                        e.Graphics.FillRectangle(drawBrush, squareOrigin[shapeCoord[j].X, shapeCoord[j].Y].X, squareOrigin[shapeCoord[j].X, shapeCoord[j].Y].Y, 20, 20);
+                    }
+                }
             }
 
             /*
