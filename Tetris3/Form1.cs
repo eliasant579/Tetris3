@@ -37,49 +37,51 @@ namespace Tetris3
         //I need this, sadly
         Point[] nextCoord = new Point[4];
 
-
         //create a shape rotation method, working with the shape array
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
             bool collisionCheck = false;
 
+            //position of the shape and collision check
             for (int i = 0; i < 4; i++)
             {
                 Point tempCoord = new Point(nextCoord[i].X, nextCoord[i].Y);
 
-                if (squareColor[tempCoord.X, tempCoord.Y] != Color.White && shapeCoord.Contains(tempCoord) == false) { collisionCheck = true; }
-
-                if (i == 3)
+                //if at least one of the squares that should be occupied next are not white AND they don't belong to the existing shape, there is a COLLISION
+                if (squareColor[tempCoord.X, tempCoord.Y] != Color.White && shapeCoord.Contains(tempCoord) == false)
                 {
+                    collisionCheck = true;
+                }
+
+                if (i == 3 && collisionCheck == false)
+                {
+                    //clear the squares occupied by the old shape
                     for (int j = 0; j < 4; j++)
                     {
-                        tempCoord = nextCoord[j];
-                        if (collisionCheck == false)
-                        {
                             squareColor[shapeCoord[j].X, shapeCoord[j].Y] = Color.White;                          
-                        }
                     }
+
+                    //set the color to the cells belonging to the new shape
                     for (int j = 0; j < 4; j++)
                     {
                         tempCoord = nextCoord[j];
-                        if (collisionCheck == false)
-                        {
-                            squareColor[tempCoord.X, tempCoord.Y] = Color.Red;
-                            shapeCoord[j] = tempCoord;
-                        }
+                        squareColor[tempCoord.X, tempCoord.Y] = Color.Red;
+                        shapeCoord[j] = tempCoord;
                     }
-                    collisionCheck = false;
                 }
             }
+
+            //drawing process happens here
             for (int i = 0; i < 12; i++)
             {
                 for (int j = 0; j < 20; j++)
                 {
-                    drawBrush.Color = squareColor[i, j];
+                    drawBrush.Color = squareColor[i, j];        //brush's color is set to the color of the cell you are drawing
                     e.Graphics.FillRectangle(drawBrush, squareOrigin[i, j].X, squareOrigin[i, j].Y, 20, 20);
 
-                    if (i == 11 && j == 19)
+                    //black boudaries drawn only once
+                    if (i == 0 && j == 0)
                     {
                         e.Graphics.FillRectangle(drawBrush, squareOrigin[0, 0].X, squareOrigin[0, 0].Y, 20, 419);
                         e.Graphics.FillRectangle(drawBrush, squareOrigin[0, 0].X, squareOrigin[0, 0].Y, 251, 20);
@@ -118,7 +120,7 @@ namespace Tetris3
                     {
                         nextCoord[i].Y = shapeCoord[i].Y + 1;
                     }
-                    /*
+                    //*
                     else if (upArrowDown == true)
                     {
                         nextCoord[i].Y = shapeCoord[i].Y - 1;
@@ -198,7 +200,7 @@ namespace Tetris3
                 upArrowDown = true;
             }
 
-            //Refresh();    //works!
+            Refresh();    //works!
         }
 
         private void Form1_KeyUp(object sender, KeyEventArgs e)
