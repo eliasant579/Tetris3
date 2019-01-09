@@ -33,68 +33,54 @@ namespace Tetris3
 
         //Shape array, contains for cells and is used to check collisions and move the current shape around. Defines tetragram's squares' coordinates
         Point[] shapeCoord = new Point[4];
+
+        //I need this, sadly
         Point[] nextCoord = new Point[4];
 
 
         //create a shape rotation method, working with the shape array
 
-
-        /*
-        /// <summary>
-        /// Draws the given tetragram according to its location and position
-        /// </summary>
-        /// <param name="origin">Coordinates of the square on the grid</param>
-        /// <param name="shape">Shape of the tetragram</param>
-        /// <param name="position">Orientation of the tetragram 0-3</param>
-        /// <param name="color">Color of the square</param>
-        public void ShapeDraw(Point origin, char shape, int position)
-        {
-            //problems
-            grid.FillRectangle(drawBrush, origin.X, origin.Y, 20, 20);
-        }
-        */
-
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            /*/
-            for (int i = 50; i <= 260; i += 21)
-            {
-                e.Graphics.DrawLine(gridPen, i, 50, i, 428);
-            }
+            bool collisionCheck = false;
 
-            for (int i = 50; i <= 428; i += 21)
+            for (int i = 0; i < 4; i++)
             {
-                e.Graphics.DrawLine(gridPen, 50, i, 260, i);
-            }
-            //*/
+                Point tempCoord = new Point(nextCoord[i].X, nextCoord[i].Y);
 
+                if (squareColor[tempCoord.X, tempCoord.Y] != Color.White && shapeCoord.Contains(tempCoord) == false) { collisionCheck = true; }
+
+                if (i == 3)
+                {
+                    for (int j = 0; j < 4; j++)
+                    {
+                        tempCoord = nextCoord[j];
+                        if (collisionCheck == false)
+                        {
+                            squareColor[shapeCoord[j].X, shapeCoord[j].Y] = Color.White;                          
+                        }
+                    }
+                    for (int j = 0; j < 4; j++)
+                    {
+                        tempCoord = nextCoord[j];
+                        if (collisionCheck == false)
+                        {
+                            squareColor[tempCoord.X, tempCoord.Y] = Color.Red;
+                            shapeCoord[j] = tempCoord;
+                        }
+                    }
+                    collisionCheck = false;
+                }
+            }
             for (int i = 0; i < 12; i++)
             {
                 for (int j = 0; j < 20; j++)
                 {
-                    //Point tempCoord = new Point(i, j);
-
                     drawBrush.Color = squareColor[i, j];
-                    /*
-                    if (i == 0 || j == 0 || i == 11 || j == 19)
-                    {
-                        squareColor[i, j] = Color.Black;
-                    }
-                    else if (nextCoord.Contains(tempCoord) == true)
-                    {
-                        squareColor[i, j] = Color.Red;
-                    }
-                    else
-                    {*/
-                        //squareColor[i, j] = Color.White;
-                        drawBrush.Color = squareColor[i, j];
-                        e.Graphics.FillRectangle(drawBrush, squareOrigin[i, j].X, squareOrigin[i, j].Y, 20, 20);
-                    //}
-
+                    e.Graphics.FillRectangle(drawBrush, squareOrigin[i, j].X, squareOrigin[i, j].Y, 20, 20);
 
                     if (i == 11 && j == 19)
                     {
-                        drawBrush.Color = squareColor[i, j];
                         e.Graphics.FillRectangle(drawBrush, squareOrigin[0, 0].X, squareOrigin[0, 0].Y, 20, 419);
                         e.Graphics.FillRectangle(drawBrush, squareOrigin[0, 0].X, squareOrigin[0, 0].Y, 251, 20);
                         e.Graphics.FillRectangle(drawBrush, squareOrigin[11, 0].X, squareOrigin[11, 0].Y, 20, 419);
@@ -102,54 +88,18 @@ namespace Tetris3
                     }
                 }
             }
-
-            bool collisionCheck = false;
-
-            for (int i = 0; i<4; i++)
-            {
-                Point tempCoord = new Point (nextCoord[i].X, nextCoord[i].Y);
-                if (squareColor[nextCoord[i].X, nextCoord[i].Y] != Color.White && shapeCoord.Contains(tempCoord) == false) { collisionCheck = true; }
-
-                if (i == 3 && collisionCheck == false)
-                {
-                    drawBrush.Color = Color.Red;
-                    for (int j = 0; i < 4; i++)
-                    {
-                        shapeCoord[j] = nextCoord[j];
-                        e.Graphics.FillRectangle(drawBrush, squareOrigin[shapeCoord[j].X, shapeCoord[j].Y].X, squareOrigin[shapeCoord[j].X, shapeCoord[j].Y].Y, 20, 20);
-                    }                   
-                }
-                else if (i == 3 && collisionCheck == true)
-                {
-                    collisionCheck = false;
-                    for (int j = 0; i < 4; i++)
-                    {
-                        nextCoord[j] = shapeCoord[i];
-                        e.Graphics.FillRectangle(drawBrush, squareOrigin[shapeCoord[j].X, shapeCoord[j].Y].X, squareOrigin[shapeCoord[j].X, shapeCoord[j].Y].Y, 20, 20);
-                    }
-                }
-            }
-
-            /*
-            if (nextCoord.Contains(tempCoord) == true && squareColor[nextCoord[squaresCounter].X, nextCoord[squaresCounter].Y] != Color.Black) //if that square is inside the shapeCoord array change color
-            {
-                //squareColor[shapeCoord[squaresCounter].X, shapeCoord[squaresCounter].Y] = Color.White;
-                //shapeCoord[squaresCounter] = nextCoord[squaresCounter];
-                squareColor[i, j] = Color.Red;
-                //squaresCounter++;
-            }
-            squaresCounter = 0;
-            */
         }
 
         //I will have to work on the temporary variables here
         private void movesTimer_Tick(object sender, EventArgs e)
         {
+            /*
             if (upArrowDown == true)
             {
-                startPos = (startPos + 1) % 4;
+                //startPos = (startPos + 1) % 4;
+                nextCoord[i].Y = shapeCoord[i].Y + 1;
             }
-            else
+            else*/
             {
                 for (int i = 0; i < 4; i++)
                 {
@@ -168,9 +118,15 @@ namespace Tetris3
                     {
                         nextCoord[i].Y = shapeCoord[i].Y + 1;
                     }
+                    /*
+                    else if (upArrowDown == true)
+                    {
+                        nextCoord[i].Y = shapeCoord[i].Y - 1;
+                    }
+                    //*/
                 }
             }
-
+            //*
             fallCounter++;
 
             if (fallCounter == levelFallFreq)
@@ -182,6 +138,7 @@ namespace Tetris3
                 }
                 fallCounter = 0;
             }
+            //*/
             Refresh();
         }
 
@@ -194,8 +151,8 @@ namespace Tetris3
             //*temporary solution until I implement the chooseShape and rotate method
             shapeCoord[0] = new Point(5, 1);
             shapeCoord[1] = new Point(6, 1);
-            shapeCoord[2] = new Point(5, 2);
-            shapeCoord[3] = new Point(4, 2);
+            shapeCoord[2] = new Point(4, 1);
+            shapeCoord[3] = new Point(5, 2);
 
             //*/
 
@@ -203,9 +160,14 @@ namespace Tetris3
             {
                 for (int j = 0; j < 20; j++)
                 {
+                    Point tempCoord = new Point(i, j);
                     if (i == 0 || i == 11 || j == 0 || j == 19)
                     {
                         squareColor[i, j] = Color.Black;
+                    }
+                    else if (shapeCoord.Contains(tempCoord) == true)
+                    {
+                        squareColor[i, j] = Color.Red;
                     }
                     else
                     {
