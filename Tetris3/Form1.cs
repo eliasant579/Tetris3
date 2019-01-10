@@ -20,7 +20,7 @@ namespace Tetris3
         int levelFallFreq = 10;
         Point startPoint = new Point(5, 1);
         bool collisionCheck = false;
-        char startShape = 'S';
+        char startShape = 'J';
         
         //I want to prove that I can include the little bump at the biginning! I'll fit the first counterClick block in the key down method, and I'll refresh
         
@@ -52,7 +52,7 @@ namespace Tetris3
                 Point tempCoord = new Point(nextCoord[i].X, nextCoord[i].Y);
                 //*
                 //if at least one of the squares that should be occupied next are not white AND they don't belong to the existing shape, there is a COLLISION
-                if (startShape == 'I' && nextCoord[i].X == 18 || nextCoord[i].Y > 19 || squareColor[tempCoord.X, tempCoord.Y] != Color.White && shapeCoord.Contains(tempCoord) == false)
+                if (startShape == 'I' && startPoint.X == 18 || tempCoord.Y > 18 || squareColor[tempCoord.X, tempCoord.Y] != Color.White && shapeCoord.Contains(tempCoord) == false)
                 {
                     collisionCheck = true;
                     startPoint.X = shapeCoord[0].X;
@@ -251,25 +251,25 @@ namespace Tetris3
                             nextCoord[0] = new Point(startPoint.X, startPoint.Y);
                             nextCoord[1] = new Point(startPoint.X + 1, startPoint.Y);
                             nextCoord[2] = new Point(startPoint.X - 1, startPoint.Y);
-                            nextCoord[3] = new Point(startPoint.X, startPoint.Y + 1);
+                            nextCoord[3] = new Point(startPoint.X - 1, startPoint.Y + 1);
                             break;
                         case 1:
                             nextCoord[0] = new Point(startPoint.X, startPoint.Y);
-                            nextCoord[1] = new Point(startPoint.X, startPoint.Y - 1);
-                            nextCoord[2] = new Point(startPoint.X - 1, startPoint.Y);
+                            nextCoord[1] = new Point(startPoint.X - 1, startPoint.Y - 1);
+                            nextCoord[2] = new Point(startPoint.X, startPoint.Y - 1);
                             nextCoord[3] = new Point(startPoint.X, startPoint.Y + 1);
                             break;
                         case 2:
                             nextCoord[0] = new Point(startPoint.X, startPoint.Y);
                             nextCoord[1] = new Point(startPoint.X + 1, startPoint.Y);
                             nextCoord[2] = new Point(startPoint.X - 1, startPoint.Y);
-                            nextCoord[3] = new Point(startPoint.X, startPoint.Y - 1);
+                            nextCoord[3] = new Point(startPoint.X + 1, startPoint.Y - 1);
                             break;
                         case 3:
                             nextCoord[0] = new Point(startPoint.X, startPoint.Y);
                             nextCoord[1] = new Point(startPoint.X, startPoint.Y - 1);
-                            nextCoord[2] = new Point(startPoint.X + 1, startPoint.Y);
-                            nextCoord[3] = new Point(startPoint.X, startPoint.Y + 1);
+                            nextCoord[2] = new Point(startPoint.X, startPoint.Y + 1);
+                            nextCoord[3] = new Point(startPoint.X + 1, startPoint.Y + 1);
                             break;
                     }
                     break;
@@ -280,25 +280,25 @@ namespace Tetris3
                             nextCoord[0] = new Point(startPoint.X, startPoint.Y);
                             nextCoord[1] = new Point(startPoint.X + 1, startPoint.Y);
                             nextCoord[2] = new Point(startPoint.X - 1, startPoint.Y);
-                            nextCoord[3] = new Point(startPoint.X, startPoint.Y + 1);
+                            nextCoord[3] = new Point(startPoint.X + 1, startPoint.Y + 1);
                             break;
                         case 1:
                             nextCoord[0] = new Point(startPoint.X, startPoint.Y);
-                            nextCoord[1] = new Point(startPoint.X, startPoint.Y - 1);
-                            nextCoord[2] = new Point(startPoint.X - 1, startPoint.Y);
+                            nextCoord[1] = new Point(startPoint.X - 1, startPoint.Y + 1);
+                            nextCoord[2] = new Point(startPoint.X, startPoint.Y - 1);
                             nextCoord[3] = new Point(startPoint.X, startPoint.Y + 1);
                             break;
                         case 2:
                             nextCoord[0] = new Point(startPoint.X, startPoint.Y);
                             nextCoord[1] = new Point(startPoint.X + 1, startPoint.Y);
                             nextCoord[2] = new Point(startPoint.X - 1, startPoint.Y);
-                            nextCoord[3] = new Point(startPoint.X, startPoint.Y - 1);
+                            nextCoord[3] = new Point(startPoint.X - 1, startPoint.Y - 1);
                             break;
                         case 3:
                             nextCoord[0] = new Point(startPoint.X, startPoint.Y);
                             nextCoord[1] = new Point(startPoint.X, startPoint.Y - 1);
-                            nextCoord[2] = new Point(startPoint.X + 1, startPoint.Y);
-                            nextCoord[3] = new Point(startPoint.X, startPoint.Y + 1);
+                            nextCoord[2] = new Point(startPoint.X, startPoint.Y + 1);
+                            nextCoord[3] = new Point(startPoint.X + 1, startPoint.Y - 1);
                             break;
                     }
                     break;
