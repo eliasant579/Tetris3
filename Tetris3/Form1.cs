@@ -18,10 +18,10 @@ namespace Tetris3
         int startPos = 0;
         int fallCounter = 0;
         int levelFallFreq = 7;
-        Point startCoords = new Point(5, 1);
         bool collisionCheck = false;
         Random shapeRandom = new Random();
         char shape;
+        Point startCoords;
 
         //I want to prove that I can include the little bump at the biginning! I'll fit the first counterClick block in the key down method, and I'll refresh
 
@@ -53,10 +53,12 @@ namespace Tetris3
                 Point tempCoord = nextCoord[i];
                 //*
                 //if at least one of the squares that should be occupied next are not white AND they don't belong to the existing shape, there is a COLLISION
+
                 if (tempCoord.Y > 18 || squareColor[tempCoord.X, tempCoord.Y] != Color.White && shapeCoord.Contains(tempCoord) == false)
                 {
                     collisionCheck = true;
                     startCoords = shapeCoord[0];
+                    shape = NextShapeSelector(shape);
                 }
                 //*/
                 if (i == 3 && collisionCheck == false)
@@ -75,12 +77,18 @@ namespace Tetris3
                         shapeCoord[j] = tempCoord;
                     }
                 }
+                /*
+                else if (collisionCheck == true && squareColor(tempCoord))
+                {
+                    int x = 0;
+                }
+                //*/
             }
 
             //drawing process happens here
-            for (int i = 0; i < 12; i++)
+            for (int i = 1; i < 12; i++)
             {
-                for (int j = 0; j < 20; j++)
+                for (int j = 1; j < 20; j++)
                 {
                     drawBrush.Color = squareColor[i, j];        //brush's color is set to the color of the cell you are drawing
                     e.Graphics.FillRectangle(drawBrush, squareOrigin[i, j].X, squareOrigin[i, j].Y, 20, 20);
@@ -94,10 +102,10 @@ namespace Tetris3
             e.Graphics.FillRectangle(drawBrush, squareOrigin[0, 19].X, squareOrigin[0, 19].Y, 251, 20);
 
             //*
-            squareColor[5, 5] = Color.Blue;
-            squareColor[4, 5] = Color.Blue;
-            squareColor[4, 6] = Color.Blue;
+            squareColor[5, 7] = Color.Blue;
             squareColor[4, 7] = Color.Blue;
+            squareColor[4, 8] = Color.Blue;
+            squareColor[4, 9] = Color.Blue;
             //*/
 
         }
@@ -358,14 +366,17 @@ namespace Tetris3
                 }
             }
 
-            //shape = NextShapeSelector('p');
-            shape = 'S';
+            shape = NextShapeSelector('p');
+            //shape = 'S';
 
             movesTimer.Enabled = true;
         }
 
         public char NextShapeSelector(char lastShape)
         {
+            startCoords = new Point(5, 1);
+            startPos = 0;
+
             //replicating the original algorithm, according to Chad Birch's post https://gaming.stackexchange.com/questions/13057/tetris-difficulty#13129
             int shapeNumber = shapeRandom.Next(0, 8);
             switch (shapeNumber)
