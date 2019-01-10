@@ -17,13 +17,14 @@ namespace Tetris3
         SolidBrush drawBrush = new SolidBrush(Color.Red);
         int startPos = 0;
         int fallCounter = 0;
-        int levelFallFreq = 10;
+        int levelFallFreq = 7;
         Point startCoords = new Point(5, 1);
         bool collisionCheck = false;
-        char shape = 'S';
-        
+        Random shapeRandom = new Random();
+        char shape;
+
         //I want to prove that I can include the little bump at the biginning! I'll fit the first counterClick block in the key down method, and I'll refresh
-        
+
         //this booleans make the program run better, I get it :)
         Boolean leftArrowDown, downArrowDown, rightArrowDown, upArrowDown; //whats the difference with bool ?
 
@@ -55,7 +56,7 @@ namespace Tetris3
                 if (tempCoord.Y > 18 || squareColor[tempCoord.X, tempCoord.Y] != Color.White && shapeCoord.Contains(tempCoord) == false)
                 {
                     collisionCheck = true;
-                    startCoords.X = shapeCoord[0].X;
+                    startCoords = shapeCoord[0];
                 }
                 //*/
                 if (i == 3 && collisionCheck == false)
@@ -93,8 +94,10 @@ namespace Tetris3
             e.Graphics.FillRectangle(drawBrush, squareOrigin[0, 19].X, squareOrigin[0, 19].Y, 251, 20);
 
             //*
-            squareColor[4, 2] = Color.Blue;
-            squareColor[4, 3] = Color.Blue;
+            squareColor[5, 5] = Color.Blue;
+            squareColor[4, 5] = Color.Blue;
+            squareColor[4, 6] = Color.Blue;
+            squareColor[4, 7] = Color.Blue;
             //*/
 
         }
@@ -324,7 +327,7 @@ namespace Tetris3
                             goto case 0;
                     }
                     break;
-            }             
+            }
             Refresh();
         }
 
@@ -354,7 +357,81 @@ namespace Tetris3
                     squareOrigin[i, j] = new Point(30 + i * 21, 30 + j * 21);
                 }
             }
+
+            //shape = NextShapeSelector('p');
+            shape = 'S';
+
             movesTimer.Enabled = true;
+        }
+
+        public char NextShapeSelector(char lastShape)
+        {
+            //replicating the original algorithm, according to Chad Birch's post https://gaming.stackexchange.com/questions/13057/tetris-difficulty#13129
+            int shapeNumber = shapeRandom.Next(0, 8);
+            switch (shapeNumber)
+            {
+                case 1:
+                    if (lastShape == 'T')
+                    {
+                        goto default;
+                    }
+                    return 'T';
+                case 2:
+                    if (lastShape == 'S')
+                    {
+                        goto default;
+                    }
+                    return 'S';
+                case 3:
+                    if (lastShape == 'Z')
+                    {
+                        goto default;
+                    }
+                    return 'Z';
+                case 4:
+                    if (lastShape == 'I')
+                    {
+                        goto default;
+                    }
+                    return 'I';
+                case 5:
+                    if (lastShape == 'L')
+                    {
+                        goto default;
+                    }
+                    return 'L';
+                case 6:
+                    if (lastShape == 'J')
+                    {
+                        goto default;
+                    }
+                    return 'J';
+                case 7:
+                    if (lastShape == 'O')
+                    {
+                        goto default;
+                    }
+                    return 'O';
+                default:
+                    shapeNumber = shapeRandom.Next(1, 8);
+                    switch(shapeNumber)
+                    {
+                        case 1:
+                            return 'T';
+                        case 2:
+                            return 'S';
+                        case 3:
+                            return 'Z';
+                        case 4:
+                            return 'I';
+                        case 5:
+                            return 'L';
+                        case 6:
+                            return 'J';
+                        default:
+                            return 'O';
+                    }
+            }
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
