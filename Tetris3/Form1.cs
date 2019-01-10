@@ -18,9 +18,9 @@ namespace Tetris3
         int startPos = 0;
         int fallCounter = 0;
         int levelFallFreq = 10;
-        Point startPoint = new Point(5, 1);
+        Point startCoords = new Point(5, 1);
         bool collisionCheck = false;
-        char startShape = 'J';
+        char shape = 'S';
         
         //I want to prove that I can include the little bump at the biginning! I'll fit the first counterClick block in the key down method, and I'll refresh
         
@@ -49,13 +49,13 @@ namespace Tetris3
             //position of the shape and collision check
             for (int i = 0; i < 4; i++)
             {
-                Point tempCoord = new Point(nextCoord[i].X, nextCoord[i].Y);
+                Point tempCoord = nextCoord[i];
                 //*
                 //if at least one of the squares that should be occupied next are not white AND they don't belong to the existing shape, there is a COLLISION
-                if (startShape == 'I' && startPoint.X == 18 || tempCoord.Y > 18 || squareColor[tempCoord.X, tempCoord.Y] != Color.White && shapeCoord.Contains(tempCoord) == false)
+                if (tempCoord.Y > 18 || squareColor[tempCoord.X, tempCoord.Y] != Color.White && shapeCoord.Contains(tempCoord) == false)
                 {
                     collisionCheck = true;
-                    startPoint.X = shapeCoord[0].X;
+                    startCoords.X = shapeCoord[0].X;
                 }
                 //*/
                 if (i == 3 && collisionCheck == false)
@@ -92,17 +92,23 @@ namespace Tetris3
             e.Graphics.FillRectangle(drawBrush, squareOrigin[11, 0].X, squareOrigin[11, 0].Y, 20, 419);
             e.Graphics.FillRectangle(drawBrush, squareOrigin[0, 19].X, squareOrigin[0, 19].Y, 251, 20);
 
+            //*
+            squareColor[4, 2] = Color.Blue;
+            squareColor[4, 3] = Color.Blue;
+            //*/
+
         }
 
         //I will have to work on the temporary variables here
         private void movesTimer_Tick(object sender, EventArgs e)
         {
-            //*
-            if (upArrowDown == true && startPoint.X != 1 && startPoint.X != 10)
+            //if up arrow is pressed AND piece isn't at the boudaries' sides AND shape different to I, you are allowed to change position
+            //if shape IS I it MUSTN'T be at x=8. Otherwise don't change position
+            if (upArrowDown == true && startCoords.X != 1 && startCoords.X != 10 && (shape != 'I' || startCoords.X != 9))
             {
                 startPos = (startPos + 1) % 4;
             }
-            else//*/
+            else
             {
                 for (int i = 0; i < 4; i++)
                 {
@@ -125,19 +131,18 @@ namespace Tetris3
 
                 if (leftArrowDown == true)
                 {
-                    startPoint.X--;
+                    startCoords.X--;
                 }
                 else if (rightArrowDown == true)
                 {
-                    startPoint.X++;
+                    startCoords.X++;
                 }
                 else if (downArrowDown == true)
                 {
-                    startPoint.Y++;
+                    startCoords.Y++;
                 }
             }
 
-            //*
             fallCounter++;
             if (fallCounter == levelFallFreq)
             {
@@ -146,38 +151,38 @@ namespace Tetris3
                     nextCoord[i].X = shapeCoord[i].X;
                     nextCoord[i].Y = shapeCoord[i].Y + 1;
                 }
-                startPoint.Y++;
+                startCoords.Y++;
                 fallCounter = 0;
             }
 
-            switch (startShape)
+            switch (shape)
             {
                 case 'T':
                     switch (startPos)
                     {
                         case 0:
-                            nextCoord[0] = new Point(startPoint.X, startPoint.Y);
-                            nextCoord[1] = new Point(startPoint.X + 1, startPoint.Y);
-                            nextCoord[2] = new Point(startPoint.X - 1, startPoint.Y);
-                            nextCoord[3] = new Point(startPoint.X, startPoint.Y + 1);
+                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
+                            nextCoord[1] = new Point(startCoords.X + 1, startCoords.Y);
+                            nextCoord[2] = new Point(startCoords.X - 1, startCoords.Y);
+                            nextCoord[3] = new Point(startCoords.X, startCoords.Y + 1);
                             break;
                         case 1:
-                            nextCoord[0] = new Point(startPoint.X, startPoint.Y);
-                            nextCoord[1] = new Point(startPoint.X, startPoint.Y - 1);
-                            nextCoord[2] = new Point(startPoint.X - 1, startPoint.Y);
-                            nextCoord[3] = new Point(startPoint.X, startPoint.Y + 1);
+                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
+                            nextCoord[1] = new Point(startCoords.X, startCoords.Y - 1);
+                            nextCoord[2] = new Point(startCoords.X - 1, startCoords.Y);
+                            nextCoord[3] = new Point(startCoords.X, startCoords.Y + 1);
                             break;
                         case 2:
-                            nextCoord[0] = new Point(startPoint.X, startPoint.Y);
-                            nextCoord[1] = new Point(startPoint.X + 1, startPoint.Y);
-                            nextCoord[2] = new Point(startPoint.X - 1, startPoint.Y);
-                            nextCoord[3] = new Point(startPoint.X, startPoint.Y - 1);
+                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
+                            nextCoord[1] = new Point(startCoords.X + 1, startCoords.Y);
+                            nextCoord[2] = new Point(startCoords.X - 1, startCoords.Y);
+                            nextCoord[3] = new Point(startCoords.X, startCoords.Y - 1);
                             break;
                         case 3:
-                            nextCoord[0] = new Point(startPoint.X, startPoint.Y);
-                            nextCoord[1] = new Point(startPoint.X, startPoint.Y - 1);
-                            nextCoord[2] = new Point(startPoint.X + 1, startPoint.Y);
-                            nextCoord[3] = new Point(startPoint.X, startPoint.Y + 1);
+                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
+                            nextCoord[1] = new Point(startCoords.X, startCoords.Y - 1);
+                            nextCoord[2] = new Point(startCoords.X + 1, startCoords.Y);
+                            nextCoord[3] = new Point(startCoords.X, startCoords.Y + 1);
                             break;
                     }
                     break;
@@ -185,16 +190,16 @@ namespace Tetris3
                     switch (startPos)
                     {
                         case 0:
-                            nextCoord[0] = new Point(startPoint.X, startPoint.Y);
-                            nextCoord[1] = new Point(startPoint.X + 1, startPoint.Y);
-                            nextCoord[2] = new Point(startPoint.X - 1, startPoint.Y + 1);
-                            nextCoord[3] = new Point(startPoint.X, startPoint.Y + 1);
+                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
+                            nextCoord[1] = new Point(startCoords.X + 1, startCoords.Y);
+                            nextCoord[2] = new Point(startCoords.X - 1, startCoords.Y + 1);
+                            nextCoord[3] = new Point(startCoords.X, startCoords.Y + 1);
                             break;
                         case 1:
-                            nextCoord[0] = new Point(startPoint.X, startPoint.Y);
-                            nextCoord[1] = new Point(startPoint.X, startPoint.Y - 1);
-                            nextCoord[2] = new Point(startPoint.X + 1, startPoint.Y);
-                            nextCoord[3] = new Point(startPoint.X + 1, startPoint.Y + 1);
+                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
+                            nextCoord[1] = new Point(startCoords.X, startCoords.Y - 1);
+                            nextCoord[2] = new Point(startCoords.X + 1, startCoords.Y);
+                            nextCoord[3] = new Point(startCoords.X + 1, startCoords.Y + 1);
                             break;
                         case 2:
                             goto case 0;
@@ -206,16 +211,16 @@ namespace Tetris3
                     switch (startPos)
                     {
                         case 0:
-                            nextCoord[0] = new Point(startPoint.X, startPoint.Y);
-                            nextCoord[1] = new Point(startPoint.X - 1, startPoint.Y);
-                            nextCoord[2] = new Point(startPoint.X + 1, startPoint.Y + 1);
-                            nextCoord[3] = new Point(startPoint.X, startPoint.Y + 1);
+                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
+                            nextCoord[1] = new Point(startCoords.X - 1, startCoords.Y);
+                            nextCoord[2] = new Point(startCoords.X + 1, startCoords.Y + 1);
+                            nextCoord[3] = new Point(startCoords.X, startCoords.Y + 1);
                             break;
                         case 1:
-                            nextCoord[0] = new Point(startPoint.X, startPoint.Y);
-                            nextCoord[1] = new Point(startPoint.X, startPoint.Y - 1);
-                            nextCoord[2] = new Point(startPoint.X - 1, startPoint.Y);
-                            nextCoord[3] = new Point(startPoint.X - 1, startPoint.Y + 1);
+                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
+                            nextCoord[1] = new Point(startCoords.X, startCoords.Y + 1);
+                            nextCoord[2] = new Point(startCoords.X + 1, startCoords.Y);
+                            nextCoord[3] = new Point(startCoords.X + 1, startCoords.Y - 1);
                             break;
                         case 2:
                             goto case 0;
@@ -227,16 +232,16 @@ namespace Tetris3
                     switch (startPos)
                     {
                         case 0:
-                            nextCoord[0] = new Point(startPoint.X, startPoint.Y);
-                            nextCoord[1] = new Point(startPoint.X - 1, startPoint.Y);
-                            nextCoord[2] = new Point(startPoint.X + 1, startPoint.Y);
-                            nextCoord[3] = new Point(startPoint.X + 2, startPoint.Y);
+                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
+                            nextCoord[1] = new Point(startCoords.X - 1, startCoords.Y);
+                            nextCoord[2] = new Point(startCoords.X + 1, startCoords.Y);
+                            nextCoord[3] = new Point(startCoords.X + 2, startCoords.Y);
                             break;
                         case 1:
-                            nextCoord[0] = new Point(startPoint.X, startPoint.Y);
-                            nextCoord[1] = new Point(startPoint.X, startPoint.Y - 1);
-                            nextCoord[2] = new Point(startPoint.X, startPoint.Y + 1);
-                            nextCoord[3] = new Point(startPoint.X, startPoint.Y + 2);
+                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
+                            nextCoord[1] = new Point(startCoords.X, startCoords.Y - 1);
+                            nextCoord[2] = new Point(startCoords.X, startCoords.Y + 1);
+                            nextCoord[3] = new Point(startCoords.X, startCoords.Y + 2);
                             break;
                         case 2:
                             goto case 0;
@@ -248,28 +253,28 @@ namespace Tetris3
                     switch (startPos)
                     {
                         case 0:
-                            nextCoord[0] = new Point(startPoint.X, startPoint.Y);
-                            nextCoord[1] = new Point(startPoint.X + 1, startPoint.Y);
-                            nextCoord[2] = new Point(startPoint.X - 1, startPoint.Y);
-                            nextCoord[3] = new Point(startPoint.X - 1, startPoint.Y + 1);
+                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
+                            nextCoord[1] = new Point(startCoords.X + 1, startCoords.Y);
+                            nextCoord[2] = new Point(startCoords.X - 1, startCoords.Y);
+                            nextCoord[3] = new Point(startCoords.X - 1, startCoords.Y + 1);
                             break;
                         case 1:
-                            nextCoord[0] = new Point(startPoint.X, startPoint.Y);
-                            nextCoord[1] = new Point(startPoint.X - 1, startPoint.Y - 1);
-                            nextCoord[2] = new Point(startPoint.X, startPoint.Y - 1);
-                            nextCoord[3] = new Point(startPoint.X, startPoint.Y + 1);
+                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
+                            nextCoord[1] = new Point(startCoords.X - 1, startCoords.Y - 1);
+                            nextCoord[2] = new Point(startCoords.X, startCoords.Y - 1);
+                            nextCoord[3] = new Point(startCoords.X, startCoords.Y + 1);
                             break;
                         case 2:
-                            nextCoord[0] = new Point(startPoint.X, startPoint.Y);
-                            nextCoord[1] = new Point(startPoint.X + 1, startPoint.Y);
-                            nextCoord[2] = new Point(startPoint.X - 1, startPoint.Y);
-                            nextCoord[3] = new Point(startPoint.X + 1, startPoint.Y - 1);
+                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
+                            nextCoord[1] = new Point(startCoords.X + 1, startCoords.Y);
+                            nextCoord[2] = new Point(startCoords.X - 1, startCoords.Y);
+                            nextCoord[3] = new Point(startCoords.X + 1, startCoords.Y - 1);
                             break;
                         case 3:
-                            nextCoord[0] = new Point(startPoint.X, startPoint.Y);
-                            nextCoord[1] = new Point(startPoint.X, startPoint.Y - 1);
-                            nextCoord[2] = new Point(startPoint.X, startPoint.Y + 1);
-                            nextCoord[3] = new Point(startPoint.X + 1, startPoint.Y + 1);
+                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
+                            nextCoord[1] = new Point(startCoords.X, startCoords.Y - 1);
+                            nextCoord[2] = new Point(startCoords.X, startCoords.Y + 1);
+                            nextCoord[3] = new Point(startCoords.X + 1, startCoords.Y + 1);
                             break;
                     }
                     break;
@@ -277,28 +282,28 @@ namespace Tetris3
                     switch (startPos)
                     {
                         case 0:
-                            nextCoord[0] = new Point(startPoint.X, startPoint.Y);
-                            nextCoord[1] = new Point(startPoint.X + 1, startPoint.Y);
-                            nextCoord[2] = new Point(startPoint.X - 1, startPoint.Y);
-                            nextCoord[3] = new Point(startPoint.X + 1, startPoint.Y + 1);
+                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
+                            nextCoord[1] = new Point(startCoords.X + 1, startCoords.Y);
+                            nextCoord[2] = new Point(startCoords.X - 1, startCoords.Y);
+                            nextCoord[3] = new Point(startCoords.X + 1, startCoords.Y + 1);
                             break;
                         case 1:
-                            nextCoord[0] = new Point(startPoint.X, startPoint.Y);
-                            nextCoord[1] = new Point(startPoint.X - 1, startPoint.Y + 1);
-                            nextCoord[2] = new Point(startPoint.X, startPoint.Y - 1);
-                            nextCoord[3] = new Point(startPoint.X, startPoint.Y + 1);
+                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
+                            nextCoord[1] = new Point(startCoords.X - 1, startCoords.Y + 1);
+                            nextCoord[2] = new Point(startCoords.X, startCoords.Y - 1);
+                            nextCoord[3] = new Point(startCoords.X, startCoords.Y + 1);
                             break;
                         case 2:
-                            nextCoord[0] = new Point(startPoint.X, startPoint.Y);
-                            nextCoord[1] = new Point(startPoint.X + 1, startPoint.Y);
-                            nextCoord[2] = new Point(startPoint.X - 1, startPoint.Y);
-                            nextCoord[3] = new Point(startPoint.X - 1, startPoint.Y - 1);
+                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
+                            nextCoord[1] = new Point(startCoords.X + 1, startCoords.Y);
+                            nextCoord[2] = new Point(startCoords.X - 1, startCoords.Y);
+                            nextCoord[3] = new Point(startCoords.X - 1, startCoords.Y - 1);
                             break;
                         case 3:
-                            nextCoord[0] = new Point(startPoint.X, startPoint.Y);
-                            nextCoord[1] = new Point(startPoint.X, startPoint.Y - 1);
-                            nextCoord[2] = new Point(startPoint.X, startPoint.Y + 1);
-                            nextCoord[3] = new Point(startPoint.X + 1, startPoint.Y - 1);
+                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
+                            nextCoord[1] = new Point(startCoords.X, startCoords.Y - 1);
+                            nextCoord[2] = new Point(startCoords.X, startCoords.Y + 1);
+                            nextCoord[3] = new Point(startCoords.X + 1, startCoords.Y - 1);
                             break;
                     }
                     break;
@@ -306,10 +311,10 @@ namespace Tetris3
                     switch (startPos)
                     {
                         case 0:
-                            nextCoord[0] = new Point(startPoint.X, startPoint.Y);
-                            nextCoord[1] = new Point(startPoint.X + 1, startPoint.Y);
-                            nextCoord[2] = new Point(startPoint.X, startPoint.Y + 1);
-                            nextCoord[3] = new Point(startPoint.X + 1, startPoint.Y + 1);
+                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
+                            nextCoord[1] = new Point(startCoords.X + 1, startCoords.Y);
+                            nextCoord[2] = new Point(startCoords.X, startCoords.Y + 1);
+                            nextCoord[3] = new Point(startCoords.X + 1, startCoords.Y + 1);
                             break;
                         case 1:
                             goto case 0;
