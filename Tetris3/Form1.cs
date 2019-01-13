@@ -15,18 +15,25 @@ namespace Tetris3
         Graphics grid;
         Pen gridPen = new Pen(Color.Black);
         SolidBrush drawBrush = new SolidBrush(Color.Red);
-        int startPos = 0;
-        int fallCounter = 0;
+
+        int startPos;
+        int fallCounter;
         int levelFallFreq = 7;
-        bool collisionCheck = false;
+        bool collisionValue;
+        
+        //random generator used to get a new shape in NewShape
         Random shapeRandom = new Random();
+        
+        //character that defines the tetragram. Possible shapes are T, S, Z, I, L, J, O
         char shape;
-        Point startCoords;
 
-        //I want to prove that I can include the little bump at the biginning! I'll fit the first counterClick block in the key down method, and I'll refresh
+        //point that to which the shape method referes to when defining the coordinates of the square in the tetragram
+        Point shapeFondPoint;
 
-        //this booleans make the program run better, I get it :)
-        Boolean leftArrowDown, downArrowDown, rightArrowDown, upArrowDown; //whats the difference with bool ?
+        //I want to prove that I can include the little bump at the beginning! I'll fit the first counterClick block in the key down method, and I'll refresh
+
+        //these booleans make the program run better, I get it :)
+        Boolean leftArrowDown, downArrowDown, rightArrowDown, upArrowDown;
 
         //this stucture contains the squares' drawing point
         //there are extra rows an columns in order to deal with both te arrays at the same time
@@ -36,54 +43,54 @@ namespace Tetris3
         Color[,] squareColor = new Color[12, 20];
 
         //Shape array, contains for cells and is used to check collisions and move the current shape around. Defines tetragram's squares' coordinates
-        Point[] shapeCoord = new Point[4];
+        Point[] pastShapeCoords = new Point[4];
 
         //I need this, sadly
-        Point[] nextCoord = new Point[4];
+        Point[] nextShapeCoords = new Point[4];
 
-        //create a shape rotation method, working with the shape array
+
+
+
+
+
+
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            collisionCheck = false;
+            CollisionCheck();
+            ShapeImplement();
 
-            //position of the shape and collision check
-            for (int i = 0; i < 4; i++)
+            for (int j = 0; j < 4; j++)
             {
-                Point tempCoord = nextCoord[i];
-                //*
-                //if at least one of the squares that should be occupied next are not white AND they don't belong to the existing shape, there is a COLLISION
-
-                if (tempCoord.Y > 18 || squareColor[tempCoord.X, tempCoord.Y] != Color.White && shapeCoord.Contains(tempCoord) == false)
-                {
-                    collisionCheck = true;
-                    startCoords = shapeCoord[0];
-                    shape = NextShapeSelector(shape);
-                }
-                //*/
-                if (i == 3 && collisionCheck == false)
-                {
-                    //clear the squares occupied by the old shape
-                    for (int j = 0; j < 4; j++)
-                    {
-                        squareColor[shapeCoord[j].X, shapeCoord[j].Y] = Color.White;
-                    }
-
-                    //set the color to the cells belonging to the new shape
-                    for (int j = 0; j < 4; j++)
-                    {
-                        tempCoord = nextCoord[j];
-                        squareColor[tempCoord.X, tempCoord.Y] = Color.Red;
-                        shapeCoord[j] = tempCoord;
-                    }
-                }
-                /*
-                else if (collisionCheck == true && squareColor(tempCoord))
-                {
-                    int x = 0;
-                }
-                //*/
+                squareColor[pastShapeCoords[j].X, pastShapeCoords[j].Y] = Color.White;
             }
+
+            //set the color to the cells belonging to the new shape
+            for (int j = 0; j < 4; j++)
+            {
+                squareColor[nextShapeCoords[j].X, nextShapeCoords[j].Y] = Color.Red;
+                pastShapeCoords[j] = nextShapeCoords[j];
+            }
+
+            /*
+            if (collisionValue == false)
+            {
+                //clear the squares occupied by the old shape
+                for (int j = 0; j < 4; j++)
+                {
+                    squareColor[pastShapeCoords[j].X, pastShapeCoords[j].Y] = Color.White;
+                }
+
+                //set the color to the cells belonging to the new shape
+                for (int j = 0; j < 4; j++)
+                {
+                    Point tempCoord = nextShapeCoords[j];
+                    squareColor[tempCoord.X, tempCoord.Y] = Color.Red;
+                    pastShapeCoords[j] = tempCoord;
+                }
+            }
+            */
+
 
             //drawing process happens here
             for (int i = 1; i < 12; i++)
@@ -101,241 +108,42 @@ namespace Tetris3
             e.Graphics.FillRectangle(drawBrush, squareOrigin[11, 0].X, squareOrigin[11, 0].Y, 20, 419);
             e.Graphics.FillRectangle(drawBrush, squareOrigin[0, 19].X, squareOrigin[0, 19].Y, 251, 20);
 
-            //*
-            squareColor[5, 7] = Color.Blue;
-            squareColor[4, 7] = Color.Blue;
-            squareColor[4, 8] = Color.Blue;
-            squareColor[4, 9] = Color.Blue;
-            //*/
-
         }
 
         //I will have to work on the temporary variables here
         private void movesTimer_Tick(object sender, EventArgs e)
         {
-            //if up arrow is pressed AND piece isn't at the boudaries' sides AND shape different to I, you are allowed to change position
-            //if shape IS I it MUSTN'T be at x=8. Otherwise don't change position
-            if (upArrowDown == true && startCoords.X != 1 && startCoords.X != 10 && (shape != 'I' || startCoords.X != 9))
-            {
-                startPos = (startPos + 1) % 4;
-            }
-            else
-            {
-                for (int i = 0; i < 4; i++)
-                {
-                    nextCoord[i].X = shapeCoord[i].X;
-                    nextCoord[i].Y = shapeCoord[i].Y;
 
-                    if (leftArrowDown == true)
-                    {
-                        nextCoord[i].X = shapeCoord[i].X - 1;
-                    }
-                    else if (rightArrowDown == true)
-                    {
-                        nextCoord[i].X = shapeCoord[i].X + 1;
-                    }
-                    else if (downArrowDown == true)
-                    {
-                        nextCoord[i].Y = shapeCoord[i].Y + 1;
-                    }
-                }
-
-                if (leftArrowDown == true)
-                {
-                    startCoords.X--;
-                }
-                else if (rightArrowDown == true)
-                {
-                    startCoords.X++;
-                }
-                else if (downArrowDown == true)
-                {
-                    startCoords.Y++;
-                }
-            }
-
+            
             fallCounter++;
+
             if (fallCounter == levelFallFreq)
             {
-                for (int i = 0; i < 4; i++)
-                {
-                    nextCoord[i].X = shapeCoord[i].X;
-                    nextCoord[i].Y = shapeCoord[i].Y + 1;
-                }
-                startCoords.Y++;
+                shapeFondPoint.Y++;
                 fallCounter = 0;
             }
 
-            switch (shape)
+            //if up arrow is pressed AND piece isn't at the boudaries' sides AND shape different to I, you are allowed to change position
+            //if shape IS I it MUSTN'T be at x=8. Otherwise don't change position
+            else if (upArrowDown == true && shapeFondPoint.X != 1 && shapeFondPoint.X != 10 && (shape != 'I' || shapeFondPoint.X != 9))
             {
-                case 'T':
-                    switch (startPos)
-                    {
-                        case 0:
-                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
-                            nextCoord[1] = new Point(startCoords.X + 1, startCoords.Y);
-                            nextCoord[2] = new Point(startCoords.X - 1, startCoords.Y);
-                            nextCoord[3] = new Point(startCoords.X, startCoords.Y + 1);
-                            break;
-                        case 1:
-                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
-                            nextCoord[1] = new Point(startCoords.X, startCoords.Y - 1);
-                            nextCoord[2] = new Point(startCoords.X - 1, startCoords.Y);
-                            nextCoord[3] = new Point(startCoords.X, startCoords.Y + 1);
-                            break;
-                        case 2:
-                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
-                            nextCoord[1] = new Point(startCoords.X + 1, startCoords.Y);
-                            nextCoord[2] = new Point(startCoords.X - 1, startCoords.Y);
-                            nextCoord[3] = new Point(startCoords.X, startCoords.Y - 1);
-                            break;
-                        case 3:
-                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
-                            nextCoord[1] = new Point(startCoords.X, startCoords.Y - 1);
-                            nextCoord[2] = new Point(startCoords.X + 1, startCoords.Y);
-                            nextCoord[3] = new Point(startCoords.X, startCoords.Y + 1);
-                            break;
-                    }
-                    break;
-                case 'S':
-                    switch (startPos)
-                    {
-                        case 0:
-                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
-                            nextCoord[1] = new Point(startCoords.X + 1, startCoords.Y);
-                            nextCoord[2] = new Point(startCoords.X - 1, startCoords.Y + 1);
-                            nextCoord[3] = new Point(startCoords.X, startCoords.Y + 1);
-                            break;
-                        case 1:
-                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
-                            nextCoord[1] = new Point(startCoords.X, startCoords.Y - 1);
-                            nextCoord[2] = new Point(startCoords.X + 1, startCoords.Y);
-                            nextCoord[3] = new Point(startCoords.X + 1, startCoords.Y + 1);
-                            break;
-                        case 2:
-                            goto case 0;
-                        case 3:
-                            goto case 1;
-                    }
-                    break;
-                case 'Z':
-                    switch (startPos)
-                    {
-                        case 0:
-                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
-                            nextCoord[1] = new Point(startCoords.X - 1, startCoords.Y);
-                            nextCoord[2] = new Point(startCoords.X + 1, startCoords.Y + 1);
-                            nextCoord[3] = new Point(startCoords.X, startCoords.Y + 1);
-                            break;
-                        case 1:
-                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
-                            nextCoord[1] = new Point(startCoords.X, startCoords.Y + 1);
-                            nextCoord[2] = new Point(startCoords.X + 1, startCoords.Y);
-                            nextCoord[3] = new Point(startCoords.X + 1, startCoords.Y - 1);
-                            break;
-                        case 2:
-                            goto case 0;
-                        case 3:
-                            goto case 1;
-                    }
-                    break;
-                case 'I':
-                    switch (startPos)
-                    {
-                        case 0:
-                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
-                            nextCoord[1] = new Point(startCoords.X - 1, startCoords.Y);
-                            nextCoord[2] = new Point(startCoords.X + 1, startCoords.Y);
-                            nextCoord[3] = new Point(startCoords.X + 2, startCoords.Y);
-                            break;
-                        case 1:
-                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
-                            nextCoord[1] = new Point(startCoords.X, startCoords.Y - 1);
-                            nextCoord[2] = new Point(startCoords.X, startCoords.Y + 1);
-                            nextCoord[3] = new Point(startCoords.X, startCoords.Y + 2);
-                            break;
-                        case 2:
-                            goto case 0;
-                        case 3:
-                            goto case 1;
-                    }
-                    break;
-                case 'L':
-                    switch (startPos)
-                    {
-                        case 0:
-                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
-                            nextCoord[1] = new Point(startCoords.X + 1, startCoords.Y);
-                            nextCoord[2] = new Point(startCoords.X - 1, startCoords.Y);
-                            nextCoord[3] = new Point(startCoords.X - 1, startCoords.Y + 1);
-                            break;
-                        case 1:
-                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
-                            nextCoord[1] = new Point(startCoords.X - 1, startCoords.Y - 1);
-                            nextCoord[2] = new Point(startCoords.X, startCoords.Y - 1);
-                            nextCoord[3] = new Point(startCoords.X, startCoords.Y + 1);
-                            break;
-                        case 2:
-                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
-                            nextCoord[1] = new Point(startCoords.X + 1, startCoords.Y);
-                            nextCoord[2] = new Point(startCoords.X - 1, startCoords.Y);
-                            nextCoord[3] = new Point(startCoords.X + 1, startCoords.Y - 1);
-                            break;
-                        case 3:
-                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
-                            nextCoord[1] = new Point(startCoords.X, startCoords.Y - 1);
-                            nextCoord[2] = new Point(startCoords.X, startCoords.Y + 1);
-                            nextCoord[3] = new Point(startCoords.X + 1, startCoords.Y + 1);
-                            break;
-                    }
-                    break;
-                case 'J':
-                    switch (startPos)
-                    {
-                        case 0:
-                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
-                            nextCoord[1] = new Point(startCoords.X + 1, startCoords.Y);
-                            nextCoord[2] = new Point(startCoords.X - 1, startCoords.Y);
-                            nextCoord[3] = new Point(startCoords.X + 1, startCoords.Y + 1);
-                            break;
-                        case 1:
-                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
-                            nextCoord[1] = new Point(startCoords.X - 1, startCoords.Y + 1);
-                            nextCoord[2] = new Point(startCoords.X, startCoords.Y - 1);
-                            nextCoord[3] = new Point(startCoords.X, startCoords.Y + 1);
-                            break;
-                        case 2:
-                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
-                            nextCoord[1] = new Point(startCoords.X + 1, startCoords.Y);
-                            nextCoord[2] = new Point(startCoords.X - 1, startCoords.Y);
-                            nextCoord[3] = new Point(startCoords.X - 1, startCoords.Y - 1);
-                            break;
-                        case 3:
-                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
-                            nextCoord[1] = new Point(startCoords.X, startCoords.Y - 1);
-                            nextCoord[2] = new Point(startCoords.X, startCoords.Y + 1);
-                            nextCoord[3] = new Point(startCoords.X + 1, startCoords.Y - 1);
-                            break;
-                    }
-                    break;
-                case 'O':
-                    switch (startPos)
-                    {
-                        case 0:
-                            nextCoord[0] = new Point(startCoords.X, startCoords.Y);
-                            nextCoord[1] = new Point(startCoords.X + 1, startCoords.Y);
-                            nextCoord[2] = new Point(startCoords.X, startCoords.Y + 1);
-                            nextCoord[3] = new Point(startCoords.X + 1, startCoords.Y + 1);
-                            break;
-                        case 1:
-                            goto case 0;
-                        case 2:
-                            goto case 0;
-                        case 3:
-                            goto case 0;
-                    }
-                    break;
+                startPos = (startPos + 1) % 4;
             }
+            else if (leftArrowDown == true)
+            {
+                shapeFondPoint.X--;
+            }
+            else if (rightArrowDown == true)
+            {
+                shapeFondPoint.X++;
+            }
+            else if (downArrowDown == true)
+            {
+                shapeFondPoint.Y++;
+            }
+
+            ShapeImplement();
+
             Refresh();
         }
 
@@ -354,7 +162,7 @@ namespace Tetris3
                     {
                         squareColor[i, j] = Color.Black;
                     }
-                    else if (shapeCoord.Contains(tempCoord) == true)
+                    else if (pastShapeCoords.Contains(tempCoord) == true)
                     {
                         squareColor[i, j] = Color.Red;
                     }
@@ -366,16 +174,80 @@ namespace Tetris3
                 }
             }
 
-            shape = NextShapeSelector('p');
+            shape = NewShape('p');
+            ShapeImplement();
             //shape = 'S';
+
+            //*
+            squareColor[5, 7] = Color.Blue;
+            squareColor[4, 7] = Color.Blue;
+            squareColor[4, 8] = Color.Blue;
+            squareColor[4, 9] = Color.Blue;
+            //*/
 
             movesTimer.Enabled = true;
         }
 
-        public char NextShapeSelector(char lastShape)
+        public void CollisionCheck()
         {
-            startCoords = new Point(5, 1);
+            collisionValue = false;
+
+            //position of the shape and collision check
+            for (int i = 0; i < 4; i++)
+            {
+                Point tempCoord = nextShapeCoords[i];
+                /*
+                //if at least one of the squares that should be occupied next are not white AND they don't belong to the existing shape, there is a COLLISION
+                if (tempCoord.Y > 18 || tempCoord.Y < 1 || tempCoord.X > 10 || tempCoord.X < 1 || squareColor[tempCoord.X, tempCoord.Y] != Color.White && pastShapeCoords.Contains(tempCoord) == false)
+                {                 
+                        shapeFondPoint = pastShapeCoords[0];
+                        collisionValue = true;
+                }
+
+                if (i == 3 && collisionValue == false)
+                {                    
+                    //collisionValue = false;
+                    for (int j = 0; j < 4; j++)
+                    {
+                        squareColor[pastShapeCoords[j].X, pastShapeCoords[j].Y] = Color.White;
+                    }
+
+                    //set the color to the cells belonging to the new shape
+                    for (int j = 0; j < 4; j++)
+                    {
+                        squareColor[nextShapeCoords[j].X, nextShapeCoords[j].Y] = Color.Red;
+                        pastShapeCoords[j] = nextShapeCoords[j];
+                    }
+
+                }
+                */
+
+                if (tempCoord.X < 1 || tempCoord.X > 10)
+                {
+                    shapeFondPoint = pastShapeCoords[0];
+                }
+
+                else if (squareColor[tempCoord.X, tempCoord.Y] != Color.White && pastShapeCoords.Contains(tempCoord) == false)
+                {
+                    if (tempCoord.Y > pastShapeCoords[i].Y)
+                    {
+                        shape = NewShape(shape);
+                    }
+                    else
+                    {
+                        shapeFondPoint = pastShapeCoords[0];
+                    }
+                }
+
+            }
+
+        }
+
+        public char NewShape(char lastShape)
+        {
+            shapeFondPoint = new Point(5, 1);
             startPos = 0;
+            fallCounter = 0;
 
             //replicating the original algorithm, according to Chad Birch's post https://gaming.stackexchange.com/questions/13057/tetris-difficulty#13129
             int shapeNumber = shapeRandom.Next(0, 8);
@@ -443,6 +315,181 @@ namespace Tetris3
                             return 'O';
                     }
             }
+        }
+
+        public void ShapeImplement ()
+        {
+            switch (shape)
+            {
+                case 'T':
+                    switch (startPos)
+                    {
+                        case 0:
+                            nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
+                            nextShapeCoords[1] = new Point(shapeFondPoint.X + 1, shapeFondPoint.Y);
+                            nextShapeCoords[2] = new Point(shapeFondPoint.X - 1, shapeFondPoint.Y);
+                            nextShapeCoords[3] = new Point(shapeFondPoint.X, shapeFondPoint.Y + 1);
+                            break;
+                        case 1:
+                            nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
+                            nextShapeCoords[1] = new Point(shapeFondPoint.X, shapeFondPoint.Y - 1);
+                            nextShapeCoords[2] = new Point(shapeFondPoint.X - 1, shapeFondPoint.Y);
+                            nextShapeCoords[3] = new Point(shapeFondPoint.X, shapeFondPoint.Y + 1);
+                            break;
+                        case 2:
+                            nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
+                            nextShapeCoords[1] = new Point(shapeFondPoint.X + 1, shapeFondPoint.Y);
+                            nextShapeCoords[2] = new Point(shapeFondPoint.X - 1, shapeFondPoint.Y);
+                            nextShapeCoords[3] = new Point(shapeFondPoint.X, shapeFondPoint.Y - 1);
+                            break;
+                        case 3:
+                            nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
+                            nextShapeCoords[1] = new Point(shapeFondPoint.X, shapeFondPoint.Y - 1);
+                            nextShapeCoords[2] = new Point(shapeFondPoint.X + 1, shapeFondPoint.Y);
+                            nextShapeCoords[3] = new Point(shapeFondPoint.X, shapeFondPoint.Y + 1);
+                            break;
+                    }
+                    break;
+                case 'S':
+                    switch (startPos)
+                    {
+                        case 0:
+                            nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
+                            nextShapeCoords[1] = new Point(shapeFondPoint.X + 1, shapeFondPoint.Y);
+                            nextShapeCoords[2] = new Point(shapeFondPoint.X - 1, shapeFondPoint.Y + 1);
+                            nextShapeCoords[3] = new Point(shapeFondPoint.X, shapeFondPoint.Y + 1);
+                            break;
+                        case 1:
+                            nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
+                            nextShapeCoords[1] = new Point(shapeFondPoint.X, shapeFondPoint.Y - 1);
+                            nextShapeCoords[2] = new Point(shapeFondPoint.X + 1, shapeFondPoint.Y);
+                            nextShapeCoords[3] = new Point(shapeFondPoint.X + 1, shapeFondPoint.Y + 1);
+                            break;
+                        case 2:
+                            goto case 0;
+                        case 3:
+                            goto case 1;
+                    }
+                    break;
+                case 'Z':
+                    switch (startPos)
+                    {
+                        case 0:
+                            nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
+                            nextShapeCoords[1] = new Point(shapeFondPoint.X - 1, shapeFondPoint.Y);
+                            nextShapeCoords[2] = new Point(shapeFondPoint.X + 1, shapeFondPoint.Y + 1);
+                            nextShapeCoords[3] = new Point(shapeFondPoint.X, shapeFondPoint.Y + 1);
+                            break;
+                        case 1:
+                            nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
+                            nextShapeCoords[1] = new Point(shapeFondPoint.X, shapeFondPoint.Y + 1);
+                            nextShapeCoords[2] = new Point(shapeFondPoint.X + 1, shapeFondPoint.Y);
+                            nextShapeCoords[3] = new Point(shapeFondPoint.X + 1, shapeFondPoint.Y - 1);
+                            break;
+                        case 2:
+                            goto case 0;
+                        case 3:
+                            goto case 1;
+                    }
+                    break;
+                case 'I':
+                    switch (startPos)
+                    {
+                        case 0:
+                            nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
+                            nextShapeCoords[1] = new Point(shapeFondPoint.X - 1, shapeFondPoint.Y);
+                            nextShapeCoords[2] = new Point(shapeFondPoint.X + 1, shapeFondPoint.Y);
+                            nextShapeCoords[3] = new Point(shapeFondPoint.X + 2, shapeFondPoint.Y);
+                            break;
+                        case 1:
+                            nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
+                            nextShapeCoords[1] = new Point(shapeFondPoint.X, shapeFondPoint.Y - 1);
+                            nextShapeCoords[2] = new Point(shapeFondPoint.X, shapeFondPoint.Y + 1);
+                            nextShapeCoords[3] = new Point(shapeFondPoint.X, shapeFondPoint.Y + 2);
+                            break;
+                        case 2:
+                            goto case 0;
+                        case 3:
+                            goto case 1;
+                    }
+                    break;
+                case 'L':
+                    switch (startPos)
+                    {
+                        case 0:
+                            nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
+                            nextShapeCoords[1] = new Point(shapeFondPoint.X + 1, shapeFondPoint.Y);
+                            nextShapeCoords[2] = new Point(shapeFondPoint.X - 1, shapeFondPoint.Y);
+                            nextShapeCoords[3] = new Point(shapeFondPoint.X - 1, shapeFondPoint.Y + 1);
+                            break;
+                        case 1:
+                            nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
+                            nextShapeCoords[1] = new Point(shapeFondPoint.X - 1, shapeFondPoint.Y - 1);
+                            nextShapeCoords[2] = new Point(shapeFondPoint.X, shapeFondPoint.Y - 1);
+                            nextShapeCoords[3] = new Point(shapeFondPoint.X, shapeFondPoint.Y + 1);
+                            break;
+                        case 2:
+                            nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
+                            nextShapeCoords[1] = new Point(shapeFondPoint.X + 1, shapeFondPoint.Y);
+                            nextShapeCoords[2] = new Point(shapeFondPoint.X - 1, shapeFondPoint.Y);
+                            nextShapeCoords[3] = new Point(shapeFondPoint.X + 1, shapeFondPoint.Y - 1);
+                            break;
+                        case 3:
+                            nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
+                            nextShapeCoords[1] = new Point(shapeFondPoint.X, shapeFondPoint.Y - 1);
+                            nextShapeCoords[2] = new Point(shapeFondPoint.X, shapeFondPoint.Y + 1);
+                            nextShapeCoords[3] = new Point(shapeFondPoint.X + 1, shapeFondPoint.Y + 1);
+                            break;
+                    }
+                    break;
+                case 'J':
+                    switch (startPos)
+                    {
+                        case 0:
+                            nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
+                            nextShapeCoords[1] = new Point(shapeFondPoint.X + 1, shapeFondPoint.Y);
+                            nextShapeCoords[2] = new Point(shapeFondPoint.X - 1, shapeFondPoint.Y);
+                            nextShapeCoords[3] = new Point(shapeFondPoint.X + 1, shapeFondPoint.Y + 1);
+                            break;
+                        case 1:
+                            nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
+                            nextShapeCoords[1] = new Point(shapeFondPoint.X - 1, shapeFondPoint.Y + 1);
+                            nextShapeCoords[2] = new Point(shapeFondPoint.X, shapeFondPoint.Y - 1);
+                            nextShapeCoords[3] = new Point(shapeFondPoint.X, shapeFondPoint.Y + 1);
+                            break;
+                        case 2:
+                            nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
+                            nextShapeCoords[1] = new Point(shapeFondPoint.X + 1, shapeFondPoint.Y);
+                            nextShapeCoords[2] = new Point(shapeFondPoint.X - 1, shapeFondPoint.Y);
+                            nextShapeCoords[3] = new Point(shapeFondPoint.X - 1, shapeFondPoint.Y - 1);
+                            break;
+                        case 3:
+                            nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
+                            nextShapeCoords[1] = new Point(shapeFondPoint.X, shapeFondPoint.Y - 1);
+                            nextShapeCoords[2] = new Point(shapeFondPoint.X, shapeFondPoint.Y + 1);
+                            nextShapeCoords[3] = new Point(shapeFondPoint.X + 1, shapeFondPoint.Y - 1);
+                            break;
+                    }
+                    break;
+                case 'O':
+                    switch (startPos)
+                    {
+                        case 0:
+                            nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
+                            nextShapeCoords[1] = new Point(shapeFondPoint.X + 1, shapeFondPoint.Y);
+                            nextShapeCoords[2] = new Point(shapeFondPoint.X, shapeFondPoint.Y + 1);
+                            nextShapeCoords[3] = new Point(shapeFondPoint.X + 1, shapeFondPoint.Y + 1);
+                            break;
+                        case 1:
+                            goto case 0;
+                        case 2:
+                            goto case 0;
+                        case 3:
+                            goto case 0;
+                    }
+                    break;
+            }
+
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
