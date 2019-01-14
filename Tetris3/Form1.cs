@@ -220,7 +220,7 @@ namespace Tetris3
                     }
 
                 }
-                */
+                *//
 
                 if (tempCoord.X < 1 || tempCoord.X > 10)
                 {
