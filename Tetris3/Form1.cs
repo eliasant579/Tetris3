@@ -60,11 +60,6 @@ namespace Tetris3
             CollisionCheck();
             ShapeImplement();
 
-            for (int j = 0; j < 4; j++)
-            {
-                squareColor[pastShapeCoords[j].X, pastShapeCoords[j].Y] = Color.White;
-            }
-
             //set the color to the cells belonging to the new shape
             for (int j = 0; j < 4; j++)
             {
@@ -190,6 +185,12 @@ namespace Tetris3
 
         public void CollisionCheck()
         {
+            //last shape is erased
+            for (int j = 0; j < 4; j++)
+            {
+                squareColor[pastShapeCoords[j].X, pastShapeCoords[j].Y] = Color.White;
+            }
+
             collisionValue = false;
 
             //position of the shape and collision check
@@ -220,14 +221,14 @@ namespace Tetris3
                     }
 
                 }
-                *//
+                *///
 
                 if (tempCoord.X < 1 || tempCoord.X > 10)
                 {
                     shapeFondPoint = pastShapeCoords[0];
                 }
 
-                else if (squareColor[tempCoord.X, tempCoord.Y] != Color.White && pastShapeCoords.Contains(tempCoord) == false)
+                else if (squareColor[tempCoord.X, tempCoord.Y] != Color.White)
                 {
                     if (tempCoord.Y > pastShapeCoords[i].Y)
                     {
