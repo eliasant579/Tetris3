@@ -18,7 +18,7 @@ namespace Tetris3
 
         int startPos;
         int fallCounter;
-        int levelFallFreq = 7;
+        int levelFallFreq = 5;
         bool collisionValue;
         Color shapeColor;
         
@@ -50,14 +50,9 @@ namespace Tetris3
         Point[] nextShapeCoords = new Point[4];
 
 
-
-
-
-
-
-
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
+            ShapeImplement();
             CollisionCheck();
             ShapeImplement();
 
@@ -67,26 +62,6 @@ namespace Tetris3
                 squareColor[nextShapeCoords[j].X, nextShapeCoords[j].Y] = shapeColor;
                 pastShapeCoords[j] = nextShapeCoords[j];
             }
-
-            /*
-            if (collisionValue == false)
-            {
-                //clear the squares occupied by the old shape
-                for (int j = 0; j < 4; j++)
-                {
-                    squareColor[pastShapeCoords[j].X, pastShapeCoords[j].Y] = Color.White;
-                }
-
-                //set the color to the cells belonging to the new shape
-                for (int j = 0; j < 4; j++)
-                {
-                    Point tempCoord = nextShapeCoords[j];
-                    squareColor[tempCoord.X, tempCoord.Y] = Color.Red;
-                    pastShapeCoords[j] = tempCoord;
-                }
-            }
-            */
-
 
             //drawing process happens here
             for (int i = 1; i < 12; i++)
@@ -137,8 +112,6 @@ namespace Tetris3
             {
                 shapeFondPoint.Y++;
             }
-
-            ShapeImplement();
 
             Refresh();
         }
@@ -192,38 +165,11 @@ namespace Tetris3
                 squareColor[pastShapeCoords[j].X, pastShapeCoords[j].Y] = Color.White;
             }
 
-            collisionValue = false;
-
             //position of the shape and collision check
             for (int i = 0; i < 4; i++)
             {
                 Point tempCoord = nextShapeCoords[i];
-                /*
-                //if at least one of the squares that should be occupied next are not white AND they don't belong to the existing shape, there is a COLLISION
-                if (tempCoord.Y > 18 || tempCoord.Y < 1 || tempCoord.X > 10 || tempCoord.X < 1 || squareColor[tempCoord.X, tempCoord.Y] != Color.White && pastShapeCoords.Contains(tempCoord) == false)
-                {                 
-                        shapeFondPoint = pastShapeCoords[0];
-                        collisionValue = true;
-                }
-
-                if (i == 3 && collisionValue == false)
-                {                    
-                    //collisionValue = false;
-                    for (int j = 0; j < 4; j++)
-                    {
-                        squareColor[pastShapeCoords[j].X, pastShapeCoords[j].Y] = Color.White;
-                    }
-
-                    //set the color to the cells belonging to the new shape
-                    for (int j = 0; j < 4; j++)
-                    {
-                        squareColor[nextShapeCoords[j].X, nextShapeCoords[j].Y] = Color.Red;
-                        pastShapeCoords[j] = nextShapeCoords[j];
-                    }
-
-                }
-                *///
-
+ 
                 if (tempCoord.X < 1 || tempCoord.X > 10)
                 {
                     shapeFondPoint = pastShapeCoords[0];
@@ -233,11 +179,8 @@ namespace Tetris3
                 {
                     if (tempCoord.Y > pastShapeCoords[i].Y)
                     {
-                        for (int j = 0; j < 4; j++)
-                        {
-                            squareColor[pastShapeCoords[j].X, pastShapeCoords[j].Y] = shapeColor;
-                        }
-                        shape = NewShape(shape);
+                        collisionValue = true;
+                    
                     }
                     else
                     {
@@ -245,6 +188,16 @@ namespace Tetris3
                     }
                 }
 
+            }
+
+            if (collisionValue == true)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    squareColor[pastShapeCoords[j].X, pastShapeCoords[j].Y] = shapeColor;
+                }
+                shape = NewShape(shape);
+                collisionValue = false;
             }
 
         }
