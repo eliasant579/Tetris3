@@ -14,12 +14,13 @@ namespace Tetris3
     {
         Graphics grid;
         Pen gridPen = new Pen(Color.Black);
-        SolidBrush drawBrush = new SolidBrush(Color.Red);
+        SolidBrush drawBrush = new SolidBrush(Color.White);
 
         int startPos;
         int fallCounter;
         int levelFallFreq = 7;
         bool collisionValue;
+        Color shapeColor;
         
         //random generator used to get a new shape in NewShape
         Random shapeRandom = new Random();
@@ -63,7 +64,7 @@ namespace Tetris3
             //set the color to the cells belonging to the new shape
             for (int j = 0; j < 4; j++)
             {
-                squareColor[nextShapeCoords[j].X, nextShapeCoords[j].Y] = Color.Red;
+                squareColor[nextShapeCoords[j].X, nextShapeCoords[j].Y] = shapeColor;
                 pastShapeCoords[j] = nextShapeCoords[j];
             }
 
@@ -159,7 +160,7 @@ namespace Tetris3
                     }
                     else if (pastShapeCoords.Contains(tempCoord) == true)
                     {
-                        squareColor[i, j] = Color.Red;
+                        squareColor[i, j] = shapeColor;
                     }
                     else
                     {
@@ -173,7 +174,7 @@ namespace Tetris3
             ShapeImplement();
             //shape = 'S';
 
-            //*
+            /*
             squareColor[5, 7] = Color.Blue;
             squareColor[4, 7] = Color.Blue;
             squareColor[4, 8] = Color.Blue;
@@ -232,6 +233,10 @@ namespace Tetris3
                 {
                     if (tempCoord.Y > pastShapeCoords[i].Y)
                     {
+                        for (int j = 0; j < 4; j++)
+                        {
+                            squareColor[pastShapeCoords[j].X, pastShapeCoords[j].Y] = shapeColor;
+                        }
                         shape = NewShape(shape);
                     }
                     else
@@ -350,6 +355,7 @@ namespace Tetris3
                             nextShapeCoords[3] = new Point(shapeFondPoint.X, shapeFondPoint.Y + 1);
                             break;
                     }
+                    shapeColor = Color.Yellow;
                     break;
                 case 'S':
                     switch (startPos)
@@ -371,6 +377,7 @@ namespace Tetris3
                         case 3:
                             goto case 1;
                     }
+                    shapeColor = Color.LightSkyBlue;
                     break;
                 case 'Z':
                     switch (startPos)
@@ -392,6 +399,7 @@ namespace Tetris3
                         case 3:
                             goto case 1;
                     }
+                    shapeColor = Color.Green;
                     break;
                 case 'I':
                     switch (startPos)
@@ -413,6 +421,7 @@ namespace Tetris3
                         case 3:
                             goto case 1;
                     }
+                    shapeColor = Color.Orange;
                     break;
                 case 'L':
                     switch (startPos)
@@ -442,6 +451,7 @@ namespace Tetris3
                             nextShapeCoords[3] = new Point(shapeFondPoint.X + 1, shapeFondPoint.Y + 1);
                             break;
                     }
+                    shapeColor = Color.Blue;
                     break;
                 case 'J':
                     switch (startPos)
@@ -471,6 +481,7 @@ namespace Tetris3
                             nextShapeCoords[3] = new Point(shapeFondPoint.X + 1, shapeFondPoint.Y - 1);
                             break;
                     }
+                    shapeColor = Color.Purple;
                     break;
                 case 'O':
                     switch (startPos)
@@ -488,6 +499,7 @@ namespace Tetris3
                         case 3:
                             goto case 0;
                     }
+                    shapeColor = Color.Red;
                     break;
             }
 
