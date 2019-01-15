@@ -16,6 +16,7 @@ namespace Tetris3
         Pen gridPen = new Pen(Color.Black);
         SolidBrush drawBrush = new SolidBrush(Color.White);
 
+        int score = 0;
         int startPos;
         int fallCounter;
         int levelFallFreq = 6;
@@ -63,6 +64,8 @@ namespace Tetris3
                 pastShapeCoords[j] = nextShapeCoords[j];
             }
 
+            e.Graphics.FillRectangle(drawBrush, squareOrigin[0, 0].X, squareOrigin[0, 0].Y, 251, 419);
+
             //drawing process happens here
             for (int i = 1; i < 12; i++)
             {
@@ -73,12 +76,15 @@ namespace Tetris3
                 }
             }
 
+            /*
             //black boudaries drawn only once
             e.Graphics.FillRectangle(drawBrush, squareOrigin[0, 0].X, squareOrigin[0, 0].Y, 20, 419);
             e.Graphics.FillRectangle(drawBrush, squareOrigin[0, 0].X, squareOrigin[0, 0].Y, 251, 20);
             e.Graphics.FillRectangle(drawBrush, squareOrigin[11, 0].X, squareOrigin[11, 0].Y, 20, 419);
             e.Graphics.FillRectangle(drawBrush, squareOrigin[0, 19].X, squareOrigin[0, 19].Y, 251, 20);
+            */
 
+            scoreLabel.Text = "" + score;
         }
 
         //I will have to work on the temporary variables here
@@ -244,6 +250,8 @@ namespace Tetris3
                             }
                         }
                     }
+
+                    score++;
                 }
             }
         }
@@ -354,7 +362,7 @@ namespace Tetris3
                             nextShapeCoords[3] = new Point(shapeFondPoint.X, shapeFondPoint.Y + 1);
                             break;
                     }
-                    shapeColor = Color.Yellow;
+                    shapeColor = Color.FromArgb(255, 255, 215, 0);
                     break;
                 case 'S':
                     switch (startPos)
@@ -420,7 +428,7 @@ namespace Tetris3
                         case 3:
                             goto case 1;
                     }
-                    shapeColor = Color.Orange;
+                    shapeColor = Color.FromArgb(255, 255, 140, 0);
                     break;
                 case 'L':
                     switch (startPos)
@@ -450,7 +458,7 @@ namespace Tetris3
                             nextShapeCoords[3] = new Point(shapeFondPoint.X + 1, shapeFondPoint.Y + 1);
                             break;
                     }
-                    shapeColor = Color.Blue;
+                    shapeColor = Color.FromArgb(255, 0, 0, 205);
                     break;
                 case 'J':
                     switch (startPos)
@@ -501,7 +509,6 @@ namespace Tetris3
                     shapeColor = Color.Red;
                     break;
             }
-
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -522,8 +529,6 @@ namespace Tetris3
             {
                 upArrowDown = true;
             }
-
-            //Refresh();    //works!
         }
 
         private void Form1_KeyUp(object sender, KeyEventArgs e)
