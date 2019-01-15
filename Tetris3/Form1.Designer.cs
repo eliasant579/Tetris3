@@ -34,7 +34,6 @@
             // 
             // movesTimer
             // 
-            this.movesTimer.Interval = 80;
             this.movesTimer.Tick += new System.EventHandler(this.movesTimer_Tick);
             // 
             // Form1

@@ -18,9 +18,7 @@ namespace Tetris3
 
         int startPos;
         int fallCounter;
-        int levelFallFreq = 5;
-        bool collisionValue;
-        bool rowCompleted = true;
+        int levelFallFreq = 6;
         Color shapeColor;
         
         //random generator used to get a new shape in NewShape
@@ -87,7 +85,17 @@ namespace Tetris3
         private void movesTimer_Tick(object sender, EventArgs e)
         {
 
-            
+
+            //if up arrow is pressed AND piece isn't at the boudaries' sides AND shape different to I, you are allowed to change position
+            //if shape IS I it MUSTN'T be at x=8. Otherwise don't change position
+            if (upArrowDown == true && shapeFondPoint.X != 1 && shapeFondPoint.X != 10 && (shape != 'I' || shapeFondPoint.X != 9))
+            {
+                startPos = (startPos + 1) % 4;
+                leftArrowDown = false;
+                rightArrowDown = false;
+                downArrowDown = false;
+            }
+
             fallCounter++;
 
             if (fallCounter == levelFallFreq)
@@ -95,24 +103,20 @@ namespace Tetris3
                 shapeFondPoint.Y++;
                 fallCounter = 0;
             }
-
-            //if up arrow is pressed AND piece isn't at the boudaries' sides AND shape different to I, you are allowed to change position
-            //if shape IS I it MUSTN'T be at x=8. Otherwise don't change position
-            else if (upArrowDown == true && shapeFondPoint.X != 1 && shapeFondPoint.X != 10 && (shape != 'I' || shapeFondPoint.X != 9))
+            else if (true)
             {
-                startPos = (startPos + 1) % 4;
-            }
-            else if (leftArrowDown == true)
-            {
-                shapeFondPoint.X--;
-            }
-            else if (rightArrowDown == true)
-            {
-                shapeFondPoint.X++;
-            }
-            else if (downArrowDown == true)
-            {
-                shapeFondPoint.Y++;
+                if (leftArrowDown == true)
+                {
+                    shapeFondPoint.X--;
+                }
+                if (rightArrowDown == true)
+                {
+                    shapeFondPoint.X++;
+                }
+                if (downArrowDown == true)
+                {
+                    shapeFondPoint.Y++;
+                }
             }
 
             Refresh();
@@ -147,7 +151,6 @@ namespace Tetris3
 
             shape = NewShape('p');
             ShapeImplement();
-            //shape = 'S';
 
             /*
             squareColor[5, 7] = Color.Blue;
@@ -161,6 +164,8 @@ namespace Tetris3
 
         public void CollisionCheck()
         {
+            bool collisionValue = false;
+
             //last shape is erased
             for (int j = 0; j < 4; j++)
             {
@@ -181,8 +186,7 @@ namespace Tetris3
                 {
                     if (tempCoord.Y > pastShapeCoords[i].Y)
                     {
-                        collisionValue = true;
-                    
+                        collisionValue = true;                   
                     }
                     else
                     {
@@ -205,6 +209,8 @@ namespace Tetris3
 
         public void DeleteRows()
         {
+            bool rowCompleted;
+
             for (int i = 1; i < 19; i++)
             {
                 rowCompleted = true;
