@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.movesTimer = new System.Windows.Forms.Timer(this.components);
             this.scoreLabel = new System.Windows.Forms.Label();
+            this.levelLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // movesTimer
@@ -40,17 +41,27 @@
             // scoreLabel
             // 
             this.scoreLabel.AutoSize = true;
-            this.scoreLabel.Location = new System.Drawing.Point(319, 200);
+            this.scoreLabel.Location = new System.Drawing.Point(311, 251);
             this.scoreLabel.Name = "scoreLabel";
             this.scoreLabel.Size = new System.Drawing.Size(45, 17);
             this.scoreLabel.TabIndex = 0;
             this.scoreLabel.Text = "Score";
+            // 
+            // levelLabel
+            // 
+            this.levelLabel.AutoSize = true;
+            this.levelLabel.Location = new System.Drawing.Point(311, 288);
+            this.levelLabel.Name = "levelLabel";
+            this.levelLabel.Size = new System.Drawing.Size(42, 17);
+            this.levelLabel.TabIndex = 1;
+            this.levelLabel.Text = "Level";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.levelLabel);
             this.Controls.Add(this.scoreLabel);
             this.DoubleBuffered = true;
             this.Name = "Form1";
@@ -67,6 +78,7 @@
 
         private System.Windows.Forms.Timer movesTimer;
         private System.Windows.Forms.Label scoreLabel;
+        private System.Windows.Forms.Label levelLabel;
     }
 }
 

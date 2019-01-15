@@ -17,6 +17,7 @@ namespace Tetris3
         SolidBrush drawBrush = new SolidBrush(Color.White);
 
         int score = 0;
+        int level = 1;
         int startPos;
         int fallCounter;
         int levelFallFreq = 6;
@@ -84,7 +85,8 @@ namespace Tetris3
             e.Graphics.FillRectangle(drawBrush, squareOrigin[0, 19].X, squareOrigin[0, 19].Y, 251, 20);
             */
 
-            scoreLabel.Text = "" + score;
+            scoreLabel.Text = "Score: " + score;
+            levelLabel.Text = "Level: " + level;
         }
 
         //I will have to work on the temporary variables here
@@ -250,8 +252,12 @@ namespace Tetris3
                             }
                         }
                     }
-
                     score++;
+                    if (score % 5 == 0)
+                    {
+                        level++;
+                        levelFallFreq--;
+                    }
                 }
             }
         }
