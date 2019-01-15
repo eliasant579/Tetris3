@@ -20,6 +20,7 @@ namespace Tetris3
         int fallCounter;
         int levelFallFreq = 5;
         bool collisionValue;
+        bool rowCompleted = true;
         Color shapeColor;
         
         //random generator used to get a new shape in NewShape
@@ -55,6 +56,7 @@ namespace Tetris3
             ShapeImplement();
             CollisionCheck();
             ShapeImplement();
+            DeleteRows();
 
             //set the color to the cells belonging to the new shape
             for (int j = 0; j < 4; j++)
@@ -187,7 +189,6 @@ namespace Tetris3
                         shapeFondPoint = pastShapeCoords[0];
                     }
                 }
-
             }
 
             if (collisionValue == true)
@@ -200,6 +201,45 @@ namespace Tetris3
                 collisionValue = false;
             }
 
+        }
+
+        public void DeleteRows()
+        {
+            for (int i = 1; i < 19; i++)
+            {
+                rowCompleted = true;
+
+                for (int j = 1; j < 11; j++)
+                {
+                    if (squareColor[j, i] == Color.White)
+                    {
+                        rowCompleted = false; 
+                    }
+                }
+
+                if (rowCompleted == true)
+                {
+                    for (int j = 1; j < 11; j++)
+                    {
+                        squareColor[j, i] = Color.White;
+                    }
+
+                    for (int k = i; k > 0; k--)
+                    {
+                        for (int j = 1; j < 11; j++)
+                        {
+                            if (k != 1)
+                            {
+                                squareColor[j, k] = squareColor[j, k - 1];
+                            }
+                            else
+                            {
+                                squareColor[j, k] = Color.White;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         public char NewShape(char lastShape)
