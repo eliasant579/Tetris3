@@ -18,10 +18,12 @@ namespace Tetris3
 
         int score = 0;
         int level = 1;
-        int startPos;
-        int fallCounter;
+        int startPos = 0;
+        int tempPos = 0;
+        int gravityCounter = 0;
         int levelFallFreq = 6;
         Color shapeColor;
+        bool tempCollision = false;
         
         //random generator used to get a new shape in NewShape
         Random shapeRandom = new Random();
@@ -53,9 +55,9 @@ namespace Tetris3
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            ShapeImplement();
+            ShapeImplement(tempPos);
             CollisionCheck();
-            ShapeImplement();
+            ShapeImplement(startPos);
             DeleteRows();
 
             //set the color to the cells belonging to the new shape
@@ -77,14 +79,6 @@ namespace Tetris3
                 }
             }
 
-            /*
-            //black boudaries drawn only once
-            e.Graphics.FillRectangle(drawBrush, squareOrigin[0, 0].X, squareOrigin[0, 0].Y, 20, 419);
-            e.Graphics.FillRectangle(drawBrush, squareOrigin[0, 0].X, squareOrigin[0, 0].Y, 251, 20);
-            e.Graphics.FillRectangle(drawBrush, squareOrigin[11, 0].X, squareOrigin[11, 0].Y, 20, 419);
-            e.Graphics.FillRectangle(drawBrush, squareOrigin[0, 19].X, squareOrigin[0, 19].Y, 251, 20);
-            */
-
             scoreLabel.Text = "Score: " + score;
             levelLabel.Text = "Level: " + level;
         }
@@ -96,20 +90,24 @@ namespace Tetris3
 
             //if up arrow is pressed AND piece isn't at the boudaries' sides AND shape different to I, you are allowed to change position
             //if shape IS I it MUSTN'T be at x=8. Otherwise don't change position
-            if (upArrowDown == true && shapeFondPoint.X != 1 && shapeFondPoint.X != 10 && (shape != 'I' || shapeFondPoint.X != 9))
+            if (upArrowDown == true && shapeFondPoint.Y != 1 && shapeFondPoint.Y != 18 && shapeFondPoint.X != 1 && shapeFondPoint.X != 10 && (shape != 'I' || shapeFondPoint.X != 9 && shapeFondPoint.Y != 17) && tempCollision == false)
             {
-                startPos = (startPos + 1) % 4;
+                tempPos = (startPos + 1) % 4;
                 leftArrowDown = false;
                 rightArrowDown = false;
                 downArrowDown = false;
             }
+            else
+            {
+                upArrowDown = false;
+            }
 
-            fallCounter++;
+            gravityCounter++;
 
-            if (fallCounter == levelFallFreq)
+            if (gravityCounter == levelFallFreq)
             {
                 shapeFondPoint.Y++;
-                fallCounter = 0;
+                gravityCounter = 0;
             }
             else if (true)
             {
@@ -158,15 +156,7 @@ namespace Tetris3
             }
 
             shape = NewShape('p');
-            ShapeImplement();
-
-            /*
-            squareColor[5, 7] = Color.Blue;
-            squareColor[4, 7] = Color.Blue;
-            squareColor[4, 8] = Color.Blue;
-            squareColor[4, 9] = Color.Blue;
-            //*/
-
+            ShapeImplement(startPos);
             movesTimer.Enabled = true;
         }
 
@@ -184,7 +174,7 @@ namespace Tetris3
             for (int i = 0; i < 4; i++)
             {
                 Point tempCoord = nextShapeCoords[i];
- 
+
                 if (tempCoord.X < 1 || tempCoord.X > 10)
                 {
                     shapeFondPoint = pastShapeCoords[0];
@@ -194,7 +184,7 @@ namespace Tetris3
                 {
                     if (tempCoord.Y > pastShapeCoords[i].Y)
                     {
-                        collisionValue = true;                   
+                        collisionValue = true;
                     }
                     else
                     {
@@ -203,16 +193,44 @@ namespace Tetris3
                 }
             }
 
-            if (collisionValue == true)
+            if (collisionValue == false)
             {
-                for (int j = 0; j < 4; j++)
-                {
-                    squareColor[pastShapeCoords[j].X, pastShapeCoords[j].Y] = shapeColor;
-                }
-                shape = NewShape(shape);
-                collisionValue = false;
+                startPos = tempPos;
             }
+            else
+            {
+                /*
+                if (upArrowDown == true)
+                {
+                    tempPos = startPos;
+                }
+                else
+                {
+                    //I should add an if statement to avoid the falling piece to delete old stuff on the screen
+                    for (int j = 0; j < 4; j++)
+                    {
+                        squareColor[pastShapeCoords[j].X, pastShapeCoords[j].Y] = shapeColor;
+                    }
 
+                    shape = NewShape(shape);
+                }
+                */
+                tempPos = startPos;
+
+                if (upArrowDown == true && shape == 'I')
+                {
+                    tempCollision = true;
+                }
+                else
+                {
+                    tempCollision = false;
+                    for (int j = 0; j < 4; j++)
+                    {
+                        squareColor[pastShapeCoords[j].X, pastShapeCoords[j].Y] = shapeColor;
+                    }
+                    shape = NewShape(shape);
+                }
+            }
         }
 
         public void DeleteRows()
@@ -253,10 +271,10 @@ namespace Tetris3
                         }
                     }
                     score++;
-                    if (score % 5 == 0)
+                    if (score % 2 == 0)
                     {
                         level++;
-                        levelFallFreq--;
+                        //levelFallFreq--;
                     }
                 }
             }
@@ -266,7 +284,8 @@ namespace Tetris3
         {
             shapeFondPoint = new Point(5, 1);
             startPos = 0;
-            fallCounter = 0;
+            tempPos = 0;
+            gravityCounter = 0;
 
             //replicating the original algorithm, according to Chad Birch's post https://gaming.stackexchange.com/questions/13057/tetris-difficulty#13129
             int shapeNumber = shapeRandom.Next(0, 8);
@@ -336,12 +355,12 @@ namespace Tetris3
             }
         }
 
-        public void ShapeImplement ()
+        public void ShapeImplement (int position)
         {
             switch (shape)
             {
                 case 'T':
-                    switch (startPos)
+                    switch (position)
                     {
                         case 0:
                             nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
@@ -371,7 +390,7 @@ namespace Tetris3
                     shapeColor = Color.FromArgb(255, 255, 215, 0);
                     break;
                 case 'S':
-                    switch (startPos)
+                    switch (position)
                     {
                         case 0:
                             nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
@@ -393,7 +412,7 @@ namespace Tetris3
                     shapeColor = Color.LightSkyBlue;
                     break;
                 case 'Z':
-                    switch (startPos)
+                    switch (position)
                     {
                         case 0:
                             nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
@@ -415,7 +434,7 @@ namespace Tetris3
                     shapeColor = Color.Green;
                     break;
                 case 'I':
-                    switch (startPos)
+                    switch (position)
                     {
                         case 0:
                             nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
@@ -437,7 +456,7 @@ namespace Tetris3
                     shapeColor = Color.FromArgb(255, 255, 140, 0);
                     break;
                 case 'L':
-                    switch (startPos)
+                    switch (position)
                     {
                         case 0:
                             nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
@@ -467,7 +486,7 @@ namespace Tetris3
                     shapeColor = Color.FromArgb(255, 0, 0, 205);
                     break;
                 case 'J':
-                    switch (startPos)
+                    switch (position)
                     {
                         case 0:
                             nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
@@ -497,7 +516,7 @@ namespace Tetris3
                     shapeColor = Color.Purple;
                     break;
                 case 'O':
-                    switch (startPos)
+                    switch (position)
                     {
                         case 0:
                             nextShapeCoords[0] = new Point(shapeFondPoint.X, shapeFondPoint.Y);
