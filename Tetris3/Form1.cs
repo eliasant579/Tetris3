@@ -199,22 +199,6 @@ namespace Tetris3
             }
             else
             {
-                /*
-                if (upArrowDown == true)
-                {
-                    tempPos = startPos;
-                }
-                else
-                {
-                    //I should add an if statement to avoid the falling piece to delete old stuff on the screen
-                    for (int j = 0; j < 4; j++)
-                    {
-                        squareColor[pastShapeCoords[j].X, pastShapeCoords[j].Y] = shapeColor;
-                    }
-
-                    shape = NewShape(shape);
-                }
-                */
                 tempPos = startPos;
 
                 if (upArrowDown == true && shape == 'I')
